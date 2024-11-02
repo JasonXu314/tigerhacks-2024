@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 
-import HomeScreen from "@/app/screens/HomeScreen";
+import HomeScreen from "@/app/(tabs)/HomeScreen";
 import Navbar from "@/components/Navbar";
 
 interface Props {

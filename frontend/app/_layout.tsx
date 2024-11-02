@@ -2,8 +2,7 @@ import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import React, { useState } from 'react';
-import { Slot } from 'expo-router';
-
+import { Stack } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -24,6 +23,11 @@ export default function RootLayout() {
 	}
 
 	return (
-		<Slot></Slot>
+		<Stack initialRouteName="/" screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
+			<Stack.Screen name="Correction" options={{ headerShown: false }} />
+			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+			<Stack.Screen name="+not-found" options={{ headerShown: false }} />
+		</Stack>
 	);
 }

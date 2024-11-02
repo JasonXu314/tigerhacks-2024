@@ -124,14 +124,13 @@ const Navbar = () => {
 				}}
 			/>
 			<Tabs.Screen
-				name="Camera"
-				// component={CameraButton} // No actual screen, just the button
+				name="CameraScreen"
 				options={{
 					tabBarButton: (props) => <CameraButton {...props} />,
 				}}
 			/>
 			<Tabs.Screen
-				name="Claim"
+				name="ClaimScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Icon style={{ marginBottom: -25 }} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
@@ -139,7 +138,7 @@ const Navbar = () => {
 				}}
 			/>
 			<Tabs.Screen
-				name="Map"
+				name="MapScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Icon style={{ marginBottom: -25 }} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
