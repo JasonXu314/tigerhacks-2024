@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Button, Alert, TouchableOpacity } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import api from '@/services/AxiosConfig';
 import * as SecureStore from 'expo-secure-store';
@@ -111,29 +111,31 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 					<View>
 						<Text style={styles.titleText}>Welcome to Pantry</Text>
 						<Text style={styles.normalText}>We just need a bit more information before you can start reducing food waste</Text>
-						<Text style={styles.headerText}>First Name</Text>
-						<TextInput style={styles.input} onChangeText={setFirstName} placeholder="Enter your first name" placeholderTextColor="#959D59" />
-						<Text style={styles.headerText}>Last Name</Text>
-						<TextInput style={styles.input} onChangeText={setLastName} placeholder="Enter your last name" placeholderTextColor="#959D59" />
-						{/* <Button title="Confirm" onPress={handleNameButtonPress} />  */}
-						{/* <Text style={styles.headerText}>Enter your mobile number</Text> */}
-						<Text style={styles.headerText}>Phone Number</Text>
-						<TextInput
-							style={styles.input}
-							// onChangeText={handleInputChange}
-							onChangeText={(text) => {
-								const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-								if (numericText.length <= 10) {
-									setPhoneNumber(numericText);
-								}
-							}}
-							value={phoneNumber}
-							placeholder="Enter your phone number"
-							placeholderTextColor="#959D59"
-							keyboardType="numeric"
-							maxLength={10}
-						/>
-						<Button color="#6DC47E" title="Continue" onPress={handlePhoneNumButtonPress} />
+						<View>
+							<Text style={styles.headerText}>First Name</Text>
+							<TextInput style={styles.input} onChangeText={setFirstName} placeholder="Enter your first name" />
+						</View>
+						<View>
+							<Text style={styles.headerText}>Last Name</Text>
+							<TextInput style={styles.input} onChangeText={setLastName} placeholder="Enter your last name" />
+						</View>
+						<View>
+							<Text style={styles.headerText}>Phone Number</Text>
+							<TextInput
+								style={styles.input}
+								onChangeText={(text) => {
+									const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+									if (numericText.length <= 10) {
+										setPhoneNumber(numericText);
+									}
+								}}
+								value={phoneNumber}
+								placeholder="Enter your phone number"
+								keyboardType="numeric"
+								maxLength={10}
+							/>
+						</View>
+						<TouchableOpacity style={styles.button} onPress={handlePhoneNumButtonPress}><Text style={styles.buttonText}>Continue</Text></TouchableOpacity>
 					</View>
 				)}
 			</KeyboardAwareScrollView>
@@ -145,24 +147,23 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: 'center',
-        backgroundColor: '#F3F5FC'
+		backgroundColor: '#F3F5FC',
 	},
 	input: {
 		height: 40,
-		color: '#959D59',
-		borderColor: 'gray',
 		backgroundColor: '#E7E9F2',
-		borderWidth: 1,
-		marginBottom: 20,
+		marginBottom: 25,
 		paddingHorizontal: 10,
 		borderRadius: 10,
-		shadowColor: 'gray',
-		shadowOpacity: 50,
+		shadowColor: '#000000',
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.25,
 		shadowRadius: 2,
 	},
 	headerText: {
 		color: '#6DC47E',
 		fontSize: 20,
+		marginBottom: 10,
 	},
 	titleText: {
 		color: '#6DC47E',
@@ -174,7 +175,22 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		paddingBottom: 60,
 		paddingTop: 20,
+        marginHorizontal: 'auto'
 	},
+    button: {
+		backgroundColor: '#6DC47E',
+		borderRadius: 20,
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 15,
+		paddingHorizontal: 40,
+	},
+    buttonText: {
+        color: 'white',
+        fontSize: 15,
+    }
 });
 
 export default LoginScreen;
