@@ -49,11 +49,10 @@ function CameraButton({ children }: Props) {
 
 			api.post('/parse-receipt', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
 				.then((resp) => {
-					console.log(resp.data);
 					if (resp.data) {
 						router.navigate({
-							pathname: '/Correction',
-							params: { data: resp.data, test: 'hi' },
+							pathname: '/CorrectionScreen',
+							params: { data: resp.data },
 						});
 					}
 				})

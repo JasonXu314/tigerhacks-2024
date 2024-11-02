@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-
 import HomeScreen from "@/app/(tabs)/HomeScreen";
-import Navbar from "@/components/Navbar";
 
 interface Props {
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
@@ -42,9 +40,7 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
 
     return (
         <View style={styles.container}>
-        {showHomeScreen ? ( 
-            <Navbar /> 
-        ) : showNameInput ? (
+        {showNameInput ? (
             <View>
             <TextInput
                 style={styles.input}

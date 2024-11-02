@@ -25,7 +25,7 @@ export default function RootLayout() {
 	return (
 		<Stack initialRouteName="/" screenOptions={{ headerShown: false }}>
 			<Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
-			<Stack.Screen name="Correction" options={{ headerShown: false }} />
+			<Stack.Screen name="CorrectionScreen" options={{ headerShown: false }} />
 			<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 			<Stack.Screen name="+not-found" options={{ headerShown: false }} />
 		</Stack>
