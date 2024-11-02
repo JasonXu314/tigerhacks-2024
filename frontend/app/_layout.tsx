@@ -9,6 +9,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
     const [loaded] = useFonts({
+		JostRegular: require('../assets/fonts/Jost-Regular.ttf')
 		// OverpassExtraLight: require('../assets/fonts/Overpass-ExtraLight.ttf'),
 		// OverpassLight: require('../assets/fonts/Overpass-Light.ttf'),
 		// Overpass: require('../assets/fonts/Overpass-Regular.ttf'),
