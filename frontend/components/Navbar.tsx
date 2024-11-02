@@ -8,6 +8,7 @@ import ClaimScreen from '@/app/screens/ClaimScreen';
 import MapScreen from '@/app/screens/MapScreen';
 import * as ImagePicker from 'expo-image-picker';
 import api from '@/services/AxiosConfig';
+import { router, useNavigation } from 'expo-router';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,6 +19,7 @@ interface Props {
 function CameraButton({ children }: Props) {
 	const [image, setImage] = useState<string | null>(null);
 	const [hasPermission, setHasPermission] = useState<boolean>(false);
+    const nav = useNavigation();
 
 	useEffect(() => {
 		(async () => {
@@ -46,10 +48,16 @@ function CameraButton({ children }: Props) {
 
 			api.post('/parse-receipt', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
 				.then((resp) => {
-					console.log(resp.data);
+                    console.log(resp.data)
+                    if (resp.data) {
+                        router.navigate({
+                            pathname: '/screens/Correction',
+                            params: { data: resp.data }
+                        })
+                    }
 				})
 				.catch((err) => {
-					console.log(err);
+                    console.log(err);
 				});
 		}
 	};

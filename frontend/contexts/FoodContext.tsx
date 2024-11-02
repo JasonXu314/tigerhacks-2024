@@ -11,7 +11,10 @@ interface FoodContextType {
   updateFoodItems: (foodItems: FoodItem[]) => void;
 }
 
-export const FoodContext = createContext<FoodContextType | undefined>(undefined);
+export const FoodContext = createContext<FoodContextType>({
+    foodItems: [],
+    updateFoodItems: () => {}
+});
 
 export const FoodProvider = ({ children }: { children: ReactNode }) => {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);

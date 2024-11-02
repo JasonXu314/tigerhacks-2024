@@ -10,7 +10,7 @@ const data = [
 ];
 
 const HomeScreen = () => {
-	// const { foodItems } = useContext(FoodContext);
+	const { foodItems } = useContext(FoodContext);
 
 	const renderItem = ({ item }: { item: any }) => (
 		<View style={styles.rowFront}>
