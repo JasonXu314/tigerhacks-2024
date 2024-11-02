@@ -4,11 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '@/app/screens/HomeScreen';
 import RecipesScreen from '@/app/screens/RecipesScreen';
-import ClaimScreen from '@/app/screens/ClaimScreen';
+import ClaimScreen from '@/app/(tabs)/ClaimScreen';
 import MapScreen from '@/app/screens/MapScreen';
 import * as ImagePicker from 'expo-image-picker';
 import api from '@/services/AxiosConfig';
 import { router, useNavigation } from 'expo-router';
+import {Tabs} from 'expo-router';
 
 const Tab = createBottomTabNavigator();
 
@@ -93,7 +94,7 @@ function CameraButton({ children }: Props) {
 
 const Navbar = () => {
 	return (
-		<Tab.Navigator
+		<Tabs
 			screenOptions={{
 				tabBarShowLabel: false,
 				tabBarStyle: {
@@ -108,48 +109,44 @@ const Navbar = () => {
 				},
 			}}
 		>
-			<Tab.Screen
-				name="Home"
-				component={HomeScreen}
+			<Tabs.Screen
+				name="HomeScreen"
 				options={{
 					tabBarIcon: ({ focused }) => <Icon style={{ marginBottom: -25 }} name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
-			<Tab.Screen
-				name="Recipes"
-				component={RecipesScreen}
+			<Tabs.Screen
+				name="RecipesScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Icon style={{ marginBottom: -25 }} name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
 					),
 				}}
 			/>
-			<Tab.Screen
+			<Tabs.Screen
 				name="Camera"
-				component={CameraButton} // No actual screen, just the button
+				// component={CameraButton} // No actual screen, just the button
 				options={{
 					tabBarButton: (props) => <CameraButton {...props} />,
 				}}
 			/>
-			<Tab.Screen
+			<Tabs.Screen
 				name="Claim"
-				component={ClaimScreen}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Icon style={{ marginBottom: -25 }} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
 					),
 				}}
 			/>
-			<Tab.Screen
+			<Tabs.Screen
 				name="Map"
-				component={MapScreen}
 				options={{
 					tabBarIcon: ({ focused }) => (
 						<Icon style={{ marginBottom: -25 }} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
 					),
 				}}
 			/>
-		</Tab.Navigator>
+		</Tabs>
 	);
 };
 
