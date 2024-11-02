@@ -7,6 +7,7 @@ import RecipesScreen from '@/app/screens/RecipesScreen';
 import ClaimScreen from '@/app/screens/ClaimScreen';
 import MapScreen from '@/app/screens/MapScreen';
 import * as ImagePicker from 'expo-image-picker';
+import api from '@/services/AxiosConfig';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,10 +39,18 @@ function CameraButton({ children }: Props) {
 			quality: 1,
 		});
 
-		console.log(result);
-
 		if (!result.canceled) {
 			setImage(result.assets[0].uri);
+			const fd = new FormData();
+			fd.append('receipt', { name: 'receipt.jpeg', type: 'image/jpeg', uri: result.assets[0].uri } as any);
+
+			api.post('/parse-receipt', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+				.then((resp) => {
+					console.log(resp.data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
 		}
 	};
 
@@ -95,14 +104,16 @@ const Navbar = () => {
 				name="Home"
 				component={HomeScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => <Icon style={{ marginBottom: -25 }} name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
 			<Tab.Screen
 				name="Recipes"
 				component={RecipesScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => (
+						<Icon style={{ marginBottom: -25 }} name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
+					),
 				}}
 			/>
 			<Tab.Screen
@@ -116,14 +127,18 @@ const Navbar = () => {
 				name="Claim"
 				component={ClaimScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => (
+						<Icon style={{ marginBottom: -25 }} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
+					),
 				}}
 			/>
 			<Tab.Screen
 				name="Map"
 				component={MapScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => (
+						<Icon style={{ marginBottom: -25 }} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
+					),
 				}}
 			/>
 		</Tab.Navigator>
