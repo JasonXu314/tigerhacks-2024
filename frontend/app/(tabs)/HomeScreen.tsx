@@ -1,7 +1,6 @@
 import { FoodContext } from '@/contexts/FoodContext';
 import { FoodItem } from '@/interfaces/FoodItem';
 import api from '@/services/AxiosConfig';
-import notifee from '@notifee/react-native';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
@@ -37,7 +36,6 @@ const HomeScreen = () => {
 		api.delete(`/food-item/${id}?token=${SecureStorage.getItem('token')}`)
 			.then((resp) => {
 				updateFoodItems([...foodItems.filter((item) => item.id != id)]);
-				notifee.cancelTriggerNotification(id.toString());
 			})
 			.catch((err) => {
 				console.log(err);
