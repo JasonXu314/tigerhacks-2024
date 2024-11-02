@@ -3,17 +3,16 @@ import { FoodItem } from '@/interfaces/FoodItem';
 import api from '@/services/AxiosConfig';
 import notifee from '@notifee/react-native';
 import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
 import React, { useContext, useRef } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
-import * as Contacts from "expo-contacts";
-import { useRouter } from 'expo-router';
 
 const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
-    const router = useRouter();
+	const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
@@ -49,30 +48,26 @@ const HomeScreen = () => {
 		try {
 			let { status } = await Location.requestForegroundPermissionsAsync();
 
-    const offerToPublic = async (id: number) => {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-      
-            if (status !== "granted") {
-              Alert.alert("Location access required. Please enable in settings.")
-              return;
-            }
-      
-            let location = await Location.getCurrentPositionAsync({});
-            api.post(`/food-item/${id}/offer?token=${SecureStorage.getItem('token')}`, {
-                lng: location.coords.longitude,
-                lat:location.coords.latitude
-            })
-            .then((resp) => {
-                console.log(resp.data)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-          } catch (error) {
-            console.error("Error requesting location permission:", error);
-          }
-    }
+			if (status !== 'granted') {
+				Alert.alert('Location access required. Please enable in settings.');
+				return;
+			}
+
+			let location = await Location.getCurrentPositionAsync({});
+			api.post(`/food-item/${id}/offer?token=${SecureStorage.getItem('token')}`, {
+				lng: location.coords.longitude,
+				lat: location.coords.latitude
+			})
+				.then((resp) => {
+					console.log(resp.data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} catch (error) {
+			console.error('Error requesting location permission:', error);
+		}
+	};
 
 	const renderHiddenItem = (data: any, rowMap: any) => (
 		<View style={styles.rowBack}>
@@ -80,7 +75,9 @@ const HomeScreen = () => {
 				<Icon name="globe-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Public</Text>
 			</TouchableOpacity>
-			<TouchableOpacity style={[styles.box, { backgroundColor: '#5BB46C' }]} onPress={() => router.navigate({pathname: '/ContactsScreen', params: {food: data.item}})}>
+			<TouchableOpacity
+				style={[styles.box, { backgroundColor: '#5BB46C' }]}
+				onPress={() => router.navigate({ pathname: '/ContactsScreen', params: { food: data.item } })}>
 				<Icon name="person-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Friends</Text>
 			</TouchableOpacity>
