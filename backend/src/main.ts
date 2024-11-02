@@ -4,6 +4,7 @@ config();
 import { ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { svelte } from './client/template-engine';
@@ -16,6 +17,10 @@ async function bootstrap() {
 	app.engine('svelte', svelte);
 	app.setViewEngine('svelte');
 	app.setBaseViewsDir('src/client/routes');
+
+	const config = new DocumentBuilder().setTitle('Pantry Backend').setVersion('1.0').build();
+	const doc = SwaggerModule.createDocument(app, config);
+	SwaggerModule.setup('docs', app, doc);
 
 	app.use(cookieParser())
 		.useGlobalPipes(new ValidationPipe({ transform: true, transformOptions: { enableImplicitConversion: true } }))

@@ -10,7 +10,7 @@ export class AuthMiddleware implements NestMiddleware {
 	) {}
 
 	use(req: Request, _, next: NextFunction) {
-		const token = req.cookies[`${this.prefix}::token`];
+		const token = req.cookies[`${this.prefix}::token`] ?? req.query.token;
 
 		if (token !== undefined) {
 			req.token = token;
@@ -23,6 +23,9 @@ export class AuthMiddleware implements NestMiddleware {
 				if ('then' in user) {
 					user.then((user: any) => {
 						req.user = user;
+						next();
+					}).catch((err: any) => {
+						console.error(err);
 						next();
 					});
 				} else {

@@ -3,12 +3,7 @@
 
 type Writable<T> = import('svelte/store').Writable<T>;
 
-interface User {
-	id: number;
-	name: string;
-}
-
-type NicePrimitive = number | string | null | undefined | Date | NiceObject;
+type NicePrimitive = number | string | null | undefined | boolean | Date | NiceObject;
 type NiceObject = { [k: string]: NicePrimitive | NicePrimitive[] };
 
 interface BasePageProps<T extends NiceObject = any> {
