@@ -1,7 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import api from "@/services/AxiosConfig";
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+
 import HomeScreen from "@/app/(tabs)/HomeScreen";
+import { useRouter } from "expo-router";
 
 interface Props {
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
@@ -11,46 +15,114 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [showConfirmation, setShowConfirmation] = useState(false);
     const [showNameInput, setShowNameInput] = useState(false);
+    // const [nameInput, setNameInput] = useState("");
     const [confirmationNumber, setConfirmationNumber] = useState("");
     const [showHomeScreen, setShowHomeScreen] = useState(false);
+    const [token, setToken] = useState("")
+
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+
+    const router = useRouter();
+
+    useEffect(() => {
+        const checkToken = async () => { // Make the function async
+          try {
+            const storedToken = await AsyncStorage.getItem('token'); // Use AsyncStorage.getItem
+            if (storedToken) {
+              setToken(storedToken); 
+            //   router.navigate('/HomeScreen'); 
+            }
+          } catch (error) {
+            console.error('Error retrieving token from AsyncStorage:', error);
+          }
+        };
+    
+        checkToken(); 
+      }, []);
+    
+      useEffect(() => {
+        const saveToken = async () => { // Make the function async
+          try {
+            if (token) {
+              await AsyncStorage.setItem('token', token); // Use AsyncStorage.setItem
+            }
+          } catch (error) {
+            console.error('Error saving token to AsyncStorage:', error);
+          }
+        };
+    
+        saveToken();
+      }, [token]);
 
     const handleInputChange = (text: string) => {
         setPhoneNumber(text);
     };
 
-    const handlePhoneNumButtonPress = () => {
+    const handlePhoneNumButtonPress = async () => {
         if (phoneNumber.length > 0) {
-            setShowConfirmation(true);
+            try {
+                const response = await api.post('/users/signup', { 
+                    phone: phoneNumber, 
+                    firstName: firstName, 
+                    lastName: lastName 
+                  });
+                console.log(response.data);
+                console.log(response.data['token'])
+                setToken(response.data["token"])
+                
+                setShowConfirmation(true);
+            } catch (error) {
+                if (error.response.data['statusCode'] == 400) {
+                    setShowConfirmation(true)
+                }
+                console.error('Error posting phone number:', error.response.data);
+            }
         } else {
-            alert("Please enter a phone number.");
+            alert("Invalid phone number or name.");
         }
     };
 
-    const handleConfirmationButtonPress = () => {
-        if (confirmationNumber.length > 0) {
-            setShowNameInput(true);
-        } else {
-            alert("Invalid confirmation code.");
+    const handleConfirmationButtonPress = async () => {
+        let res = {
+            code: '' + confirmationNumber,
         }
+        try {
+            const response = await api.post('/users/verify', {code: '' + confirmationNumber}, {params: {token: token}})
+            console.log(response.data);
+            const verified = response.data['verified']
+            if (verified) {
+                router.navigate('/HomeScreen')
+            } 
+            
+        } catch (error) {
+            // console.log(error.response.data['statusCode'])
+            if (error.response.data['statusCode'] == 400) {
+                Alert.alert('Incorrect code', 'The code you entered is incorrect. Please try again.')
+            }
+            console.error('Error posting phone number:', error.response.data);
+        }
+        // if (confirmationNumber.length > 0) {
+        //     setShowNameInput(true);
+        // } else {
+        //     alert("Invalid confirmation code.");
+        // }
     };
 
-    const handleNameButtonPress = () => {
+    const handleNameButtonPress = async () => {
         setShowHomeScreen(true);
     };
 
+    useEffect(() => {
+        console.log("Token:", token); 
+      }, [token]);
+
     return (
         <View style={styles.container}>
-        {showNameInput ? (
+        {showConfirmation ? (
             <View>
-            <TextInput
-                style={styles.input}
-                placeholder="Enter your name"
-            />
-            <Button title="Confirm" onPress={handleNameButtonPress} /> 
-            </View>
-        ) : showConfirmation ? (
-            <View>
-            <Text>We sent a 6-digit confirmation code to: {phoneNumber}</Text>
+            <Text style={styles.titleText}></Text>
+            <Text style={styles.normalText}>We've sent a six digit code to {phoneNumber}. Please enter it to confirm your number</Text>
                 <TextInput
                     style={styles.input}
                     // onChangeText={setConfirmationNumber}
@@ -69,6 +141,25 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
             </View>
         ) : (
             <View>
+                <Text style={styles.titleText}>Welcome to Pantry</Text>
+                <Text style={styles.normalText}>We just need a bit more information before you can start reducing food waste</Text>
+                <Text style={styles.headerText}>First Name</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setFirstName}
+                    placeholder="Enter your first name"
+                    placeholderTextColor="#959D59"
+                />
+                <Text style={styles.headerText}>Last Name</Text>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setLastName}
+                    placeholder='Enter your last name'
+                    placeholderTextColor="#959D59"
+                />
+                {/* <Button title="Confirm" onPress={handleNameButtonPress} />  */}
+            {/* <Text style={styles.headerText}>Enter your mobile number</Text> */}
+            <Text style={styles.headerText}>Phone Number</Text>
             <TextInput
                 style={styles.input}
                 // onChangeText={handleInputChange}
@@ -79,11 +170,16 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
                     }
                   }}
                 value={phoneNumber}
-                placeholder="Phone Number"
+                placeholder="Enter your phone number"
+                placeholderTextColor="#959D59"
                 keyboardType="numeric"
                 maxLength={10}
             />
-            <Button title="Next" onPress={handlePhoneNumButtonPress} />
+            <Button 
+                color="#6DC47E" 
+                title="Continue" 
+                onPress={handlePhoneNumButtonPress} 
+            />
             </View>
         )}
         </View>
@@ -94,15 +190,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 20,
+    padding: 40,
   },
   input: {
     height: 40,
+    color: "#959D59",
     borderColor: "gray",
+    backgroundColor: "#E7E9F2",
     borderWidth: 1,
     marginBottom: 20,
     paddingHorizontal: 10,
+    borderRadius: 10,
+    shadowColor: "gray",
+    shadowOpacity: 50,
+    shadowRadius: 20
   },
+  headerText: {
+    color: '#6DC47E',
+    fontSize: 20,
+  },
+  titleText: {
+    color: '#6DC47E',
+    fontSize: 36,
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  normalText: {
+    fontSize: 14,
+    paddingBottom: 60,
+    paddingTop: 20,
+  }
+  
 });
 
 export default LoginScreen;
