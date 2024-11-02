@@ -1,7 +1,8 @@
 import React, { useContext, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { FoodContext } from '@/contexts/FoodContext';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface DataItem {
 	id: string;
@@ -25,16 +26,25 @@ const HomeScreen = () => {
 
 	const renderHiddenItem = (data: any, rowMap: any) => (
 		<View style={styles.rowBack}>
-			<Text style={styles.rowPublic}>Public</Text>
-			<Text style={styles.rowFamily}>Family</Text>
-			<Text style={styles.backRightBtn}>Delete</Text>
+            <TouchableOpacity style={[styles.box, {backgroundColor: '#439C54'}]}>
+                <Icon name="globe-outline" color="#fff" size={20} />
+                <Text style={styles.boxText}>{rowMap['1'].item.id}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.box, {backgroundColor: '#5BB46C'}]}>
+                <Icon name="person-outline" color="#fff" size={20} />
+                <Text style={styles.boxText}>Friends</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.box, {backgroundColor: '#FF4848'}]} onPress={() => {}}>
+                <Icon name="trash-outline" color="#fff" size={20} />
+                <Text style={styles.boxText}>Delete</Text>
+            </TouchableOpacity>
+		
 		</View>
 	);
 
 	const onSwipeValueChange = (swipeData: any) => {
 		const { key, value } = swipeData;
 		if (value < -20 && rowRefs.current) {
-			// Check if rowRefs.current is not null
 			rowRefs.current[key].manuallySwipeRow(-225);
 		}
 	};
@@ -44,55 +54,41 @@ const HomeScreen = () => {
 			data={data}
 			renderItem={renderItem}
 			renderHiddenItem={renderHiddenItem}
-			rightOpenValue={-150}
+			rightOpenValue={-225}
 			disableRightSwipe={true}
-			// friction={10}
-			// tension={10}
-
-			tension={200} // Adjust the tension for faster snapping
-            friction={10}
-            previewOpenValue={-40} // Adjust the preview open value
-      previewOpenDelay={300} // Adjust the preview open delay
+			tension={200}
+			friction={10}
+			previewOpenValue={-40}
+			previewOpenDelay={300}
 			onSwipeValueChange={onSwipeValueChange}
-			// previewRowKey={'0'}
-			// previewOpenValue={-40}
-			// previewOpenDelay={3000}
 		/>
 	);
 };
 
 const styles = StyleSheet.create({
-	rowPublic: {
-		backgroundColor: 'green',
-		color: 'white',
-		padding: 10,
-		borderRadius: 5,
+	rowBack: {
+		alignItems: 'center',
+		flex: 1,
+		flexDirection: 'row',
+		justifyContent: 'flex-end',
 	},
-	rowFamily: {
-		backgroundColor: 'blue',
-		color: 'white',
-		padding: 10,
-		borderRadius: 5,
-	},
+    box: {
+        width: 75,
+        padding: 10,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+    },
+    boxText: {
+        color: 'white',
+        fontSize: 12,
+    },
 	rowFront: {
 		backgroundColor: 'white',
 		padding: 20,
 		borderBottomWidth: 1,
 		borderBottomColor: 'gray',
-	},
-	rowBack: {
-		alignItems: 'center',
-		backgroundColor: '#ddd',
-		flex: 1,
-		flexDirection: 'row',
-		justifyContent: 'flex-end',
-		padding: 20,
-	},
-	backRightBtn: {
-		backgroundColor: 'red',
-		color: 'white',
-		padding: 10,
-		borderRadius: 5,
 	},
 });
 

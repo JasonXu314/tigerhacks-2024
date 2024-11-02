@@ -7,7 +7,7 @@ const BackArrow = () => (
 	<Ionicons
 		name='chevron-back-outline'
 		size={30}
-		color='white'
+		color='#6DC47E'
 		style={styles.backArrow}
 		onPress={() => {
             if (router.canGoBack()) {
@@ -19,10 +19,6 @@ const BackArrow = () => (
 
 const styles = StyleSheet.create({
 	backArrow: {
-		position: 'absolute',
-		left: 20,
-		bottom: '50%',
-		marginBottom: -15,
 		zIndex: 10
 	}
 });
