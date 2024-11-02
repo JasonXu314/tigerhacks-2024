@@ -15,7 +15,7 @@ const Index = () => {
 	if (token) {
 		return <Redirect href="/HomeScreen" />;
 	}
-	return <Redirect href="/LoginScreen" />;
+	return <Redirect href="/LandingPage" />;
 };
 
 export default Index;

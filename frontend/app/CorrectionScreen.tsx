@@ -28,8 +28,11 @@ const CorrectionScreen = () => {
 	);
 
 	const pressHandler = () => {
+		const foods = foodData.map((item: Scan) => {
+			return item['text'];
+		});
 		api.post(`/add-food?token=${SecureStorage.getItem('token')}`, {
-			names: foodData,
+			names: foods,
 		})
 			.then((resp) => {
 				console.log(resp.data);
@@ -42,7 +45,7 @@ const CorrectionScreen = () => {
 	};
 
 	const deleteRow = (id: number) => {
-        setFoodData([...foodData.filter((obj: Scan) => obj.id !== id)])
+		setFoodData([...foodData.filter((obj: Scan) => obj.id !== id)]);
 	};
 
 	return (
