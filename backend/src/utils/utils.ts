@@ -1,5 +1,7 @@
 import { DynamicModule } from '@nestjs/common';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { User } from '@prisma/client';
+import { PublicUser } from 'src/users/users.models';
 
 export function fi<T>(): T {
 	return undefined as T;
@@ -64,4 +66,12 @@ export function serveClient(): DynamicModule[] {
 			serveRoot: '/'
 		})
 	];
+}
+
+export function pruneUser({ id, firstName, phone }: User): PublicUser {
+	return {
+		id,
+		firstName,
+		phone
+	};
 }

@@ -1,14 +1,20 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthMiddleware } from './auth/auth.middleware';
-import { AuthModule, PREFIX } from './auth/auth.module';
+import { AuthModule, DATA_SOURCE, PREFIX } from './auth/auth.module';
+import { DBModule } from './db/db.module';
+import { PantryModule } from './pantry/pantry.module';
+import { UsersModule } from './users/users.module';
+import { UsersService } from './users/users.service';
 import { serveClient } from './utils/utils';
 
 @Module({
-	imports: [AuthModule.register({ prefix: 'placeholder' }), ...serveClient()],
+	imports: [DBModule, UsersModule, PantryModule, AuthModule.register({ prefix: 'placeholder' }), ...serveClient()],
 	controllers: [AppController],
-	providers: [AppService, { provide: PREFIX, useValue: 'placeholder' }]
+	providers: [
+		{ provide: PREFIX, useValue: 'placeholder' },
+		{ provide: DATA_SOURCE, useClass: UsersService }
+	]
 })
 export class AppModule implements NestModule {
 	public configure(consumer: MiddlewareConsumer): void {
