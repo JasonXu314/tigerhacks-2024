@@ -62,9 +62,9 @@ function CameraButton({ children }: Props) {
 						height: 60,
 						borderRadius: 30,
 						backgroundColor: '#e32f45',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
+						display: 'flex',
+						justifyContent: 'center',
+						alignItems: 'center',
 					}}
 				>
 					<Icon name="camera-outline" color="#fff" size={28} />
@@ -81,12 +81,12 @@ const Navbar = () => {
 				tabBarShowLabel: false,
 				tabBarStyle: {
 					position: 'absolute',
-					bottom: 25,
+					bottom: 30,
 					left: 20,
 					right: 20,
 					backgroundColor: '#ffffff',
 					borderRadius: 15,
-					height: 90,
+					height: 65,
 					...styles.shadow,
 				},
 			}}
@@ -95,14 +95,14 @@ const Navbar = () => {
 				name="Home"
 				component={HomeScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
 			<Tab.Screen
 				name="Recipes"
 				component={RecipesScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
 			<Tab.Screen
@@ -116,14 +116,14 @@ const Navbar = () => {
 				name="Claim"
 				component={ClaimScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
 			<Tab.Screen
 				name="Map"
 				component={MapScreen}
 				options={{
-					tabBarIcon: ({ focused }) => <Icon name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => <Icon style={{marginBottom: -25}} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
 				}}
 			/>
 		</Tab.Navigator>
