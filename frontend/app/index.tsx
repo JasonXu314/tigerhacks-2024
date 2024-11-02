@@ -49,7 +49,7 @@ const Index = () => {
 	useEffect(() => {
 		const userToken = SecureStore.getItem('token');
 		if (userToken) {
-			api.get(`/me?token=${userToken}`)
+			api.get(`/users/me?token=${userToken}`)
 				.then((resp) => {
 					setToken(userToken);
                     setLoading(false);

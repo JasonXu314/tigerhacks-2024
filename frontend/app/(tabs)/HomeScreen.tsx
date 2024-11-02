@@ -4,13 +4,14 @@ import api from '@/services/AxiosConfig';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
-import React, { useContext, useRef } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
+    const [refreshing, setRefreshing] = useState(false);
 	const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
@@ -93,6 +94,14 @@ const HomeScreen = () => {
 		}
 	};
 
+    const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 2000);
+	}, []);
+
+
 	return (
 		<SwipeListView
 			data={foodItems}
@@ -104,6 +113,7 @@ const HomeScreen = () => {
 			friction={10}
 			previewOpenValue={-40}
 			previewOpenDelay={300}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 			onSwipeValueChange={onSwipeValueChange}
 		/>
 	);
