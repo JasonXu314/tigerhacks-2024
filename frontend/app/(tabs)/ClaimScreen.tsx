@@ -7,35 +7,36 @@ import api from '@/services/AxiosConfig';
 import { createContext, ReactNode, useEffect } from 'react';
 import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
-import * as Location from "expo-location";
+import * as Location from 'expo-location';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<FoodItem[]>([]);
-    
-    const getOffers = async() => {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-      
-            if (status !== "granted") {
-              Alert.alert("Location access required. Please enable in settings.")
-              return;
-            }
-      
-            let location = await Location.getCurrentPositionAsync({});
-            api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
-			.then((resp) => {
-				setFoodData(resp.data);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-          } catch (error) {
-            console.error("Error requesting location permission:", error);
-          }
-    }
+
+	const getOffers = async () => {
+		try {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+
+			if (status !== 'granted') {
+				Alert.alert('Location access required. Please enable in settings.');
+				return;
+			}
+
+			let location = await Location.getCurrentPositionAsync({});
+			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
+				.then((resp) => {
+					console.log(resp.data);
+					setFoodData(resp.data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} catch (error) {
+			console.error('Error requesting location permission:', error);
+		}
+	};
 
 	useEffect(() => {
-        getOffers()
+		getOffers();
 	}, []);
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
@@ -52,9 +53,16 @@ export default function ClaimScreen() {
 			<Text style={styles.icon}>{item.foodItem.image}</Text>
 			<View>
 				<Text style={styles.title}>{item.foodItem.name.charAt(0).toUpperCase() + item.foodItem.name.slice(1).toLowerCase()}</Text>
-				<Text style={styles.exp}>Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}</Text>
+				<Text style={styles.exp}>
+					Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
+				</Text>
 			</View>
-			<Text style={styles.days}>{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left</Text>
+			<View style={{ marginLeft: 'auto' }}>
+				<Text style={styles.number}>{item.owner.phone}</Text>
+				<Text style={styles.days}>
+					{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+				</Text>
+			</View>
 		</View>
 	);
 
@@ -67,12 +75,7 @@ export default function ClaimScreen() {
 			>
 				<Text>clear storage</Text>
 			</TouchableOpacity>
-			<SwipeListView
-				data={foodData}
-				renderItem={renderItem}
-				disableRightSwipe={true}
-                disableLeftSwipe={true}
-			/>
+			<SwipeListView data={foodData} renderItem={renderItem} disableRightSwipe={true} disableLeftSwipe={true} />
 		</SafeAreaView>
 	);
 }
@@ -116,12 +119,16 @@ const styles = StyleSheet.create({
 	exp: {
 		fontSize: 14,
 		fontFamily: 'JostRegular',
-        color: '#606C38'
+		color: '#606C38',
 	},
-	days: {
-		fontSize: 17,
+    number: {
+        fontSize: 18,
 		fontFamily: 'JostRegular',
-        marginLeft: 'auto',
-        color: '#606C38'
+		color: '#606C38',
+    },
+	days: {
+		fontSize: 15,
+		fontFamily: 'JostRegular',
+		color: '#606C38',
 	},
 });

@@ -5,7 +5,7 @@ import 'react-native-gesture-handler';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import api from '@/services/AxiosConfig';
 
 Notifications.setNotificationHandler({
@@ -18,6 +18,7 @@ Notifications.setNotificationHandler({
 
 const Index = () => {
 	const [token, setToken] = useState('');
+    const [loading, setLoading] = useState(true);
 
 	const [expoPushToken, setExpoPushToken] = useState('');
 	const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
@@ -51,12 +52,21 @@ const Index = () => {
 			api.get(`/me?token=${userToken}`)
 				.then((resp) => {
 					setToken(userToken);
+                    setLoading(false);
 				})
 				.catch((err) => {
 					SecureStore.deleteItemAsync('token');
+                    setLoading(false);
 				});
 		}
+        else {
+            setLoading(false);
+        }
 	}, []);
+
+    if (loading) {
+        return <View></View>
+    }
 
 	if (token) {
 		return <Redirect href="/HomeScreen" />;
