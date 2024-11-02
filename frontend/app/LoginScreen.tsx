@@ -1,193 +1,180 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import api from "@/services/AxiosConfig";
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, Button, Alert } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import api from '@/services/AxiosConfig';
 import * as SecureStore from 'expo-secure-store';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import HomeScreen from "@/app/(tabs)/HomeScreen";
-import { useRouter } from "expo-router";
+import HomeScreen from '@/app/(tabs)/HomeScreen';
+import { useRouter } from 'expo-router';
 
 interface Props {
-    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+	setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const LoginScreen = ({setIsLoggedIn} : Props) => {
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [showConfirmation, setShowConfirmation] = useState(false);
-    const [showNameInput, setShowNameInput] = useState(false);
-    // const [nameInput, setNameInput] = useState("");
-    const [confirmationNumber, setConfirmationNumber] = useState("");
-    const [showHomeScreen, setShowHomeScreen] = useState(false);
-    const [token, setToken] = useState("")
+const LoginScreen = ({ setIsLoggedIn }: Props) => {
+	const [phoneNumber, setPhoneNumber] = useState('');
+	const [showConfirmation, setShowConfirmation] = useState(false);
+	const [showNameInput, setShowNameInput] = useState(false);
+	// const [nameInput, setNameInput] = useState("");
+	const [confirmationNumber, setConfirmationNumber] = useState('');
+	const [showHomeScreen, setShowHomeScreen] = useState(false);
+	const [token, setToken] = useState('');
 
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+	const [firstName, setFirstName] = useState('');
+	const [lastName, setLastName] = useState('');
 
-    const router = useRouter();
+	const router = useRouter();
 
-    const handleInputChange = (text: string) => {
-        setPhoneNumber(text);
-    };
+	const handleInputChange = (text: string) => {
+		setPhoneNumber(text);
+	};
 
-    const handlePhoneNumButtonPress = async () => {
-        if (phoneNumber.length > 0) {
-            try {
-                const response = await api.post('/users/signup', { 
-                    phone: phoneNumber, 
-                    firstName: firstName, 
-                    lastName: lastName 
-                  });
-                console.log(response.data);
-                console.log(response.data['token'])
-                setToken(response.data["token"])
-                
-                setShowConfirmation(true);
-            } catch (error: any) {
-                if (error.response.data['statusCode'] == 400) {
-                    setShowConfirmation(true)
-                }
-                console.error('Error posting phone number:', error.response.data);
-            }
-        } else {
-            alert("Invalid phone number or name.");
-        }
-    };
+	const handlePhoneNumButtonPress = async () => {
+		if (phoneNumber.length > 0) {
+			try {
+				const response = await api.post('/users/signup', {
+					phone: phoneNumber,
+					firstName: firstName,
+					lastName: lastName,
+				});
+				console.log(response.data);
+				console.log(response.data['token']);
+				setToken(response.data['token']);
 
-    const handleConfirmationButtonPress = async () => {
-        let res = {
-            code: '' + confirmationNumber,
-        }
-        try {
-            const response = await api.post('/users/verify', {code: '' + confirmationNumber}, {params: {token: token}})
-            console.log(response.data);
-            const verified = response.data['verified']
-            if (verified) {
-                SecureStore.setItem('token', token);
-                router.navigate('/HomeScreen')
-            } 
-            
-        } catch (error: any) {
-            // console.log(error.response.data['statusCode'])
-            if (error.response.data['statusCode'] == 400) {
-                Alert.alert('Incorrect code', 'The code you entered is incorrect. Please try again.')
-            }
-            console.error('Error posting phone number:', error.response.data);
-        }
-        // if (confirmationNumber.length > 0) {
-        //     setShowNameInput(true);
-        // } else {
-        //     alert("Invalid confirmation code.");
-        // }
-    };
+				setShowConfirmation(true);
+			} catch (error: any) {
+				if (error.response.data['statusCode'] == 400) {
+					setShowConfirmation(true);
+				}
+				console.error('Error posting phone number:', error.response.data);
+			}
+		} else {
+			alert('Invalid phone number or name.');
+		}
+	};
 
-    const handleNameButtonPress = async () => {
-        setShowHomeScreen(true);
-    };
+	const handleConfirmationButtonPress = async () => {
+		let res = {
+			code: '' + confirmationNumber,
+		};
+		try {
+			const response = await api.post('/users/verify', { code: '' + confirmationNumber }, { params: { token: token } });
+			console.log(response.data);
+			const verified = response.data['verified'];
+			if (verified) {
+				SecureStore.setItem('token', token);
+				router.navigate('/HomeScreen');
+			}
+		} catch (error: any) {
+			// console.log(error.response.data['statusCode'])
+			if (error.response.data['statusCode'] == 400) {
+				Alert.alert('Incorrect code', 'The code you entered is incorrect. Please try again.');
+			}
+			console.error('Error posting phone number:', error.response.data);
+		}
+		// if (confirmationNumber.length > 0) {
+		//     setShowNameInput(true);
+		// } else {
+		//     alert("Invalid confirmation code.");
+		// }
+	};
 
-    return (
-        <View style={styles.container}>
-        {showConfirmation ? (
-            <View>
-            <Text style={styles.titleText}></Text>
-            <Text style={styles.normalText}>We've sent a six digit code to {phoneNumber}. Please enter it to confirm your number</Text>
-                <TextInput
-                    style={styles.input}
-                    // onChangeText={setConfirmationNumber}
-                    onChangeText={(text) => {
-                        const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                        if (numericText.length <= 6) {
-                          setConfirmationNumber(numericText);
-                        }
-                      }}
-                    value={confirmationNumber}
-                    placeholder="Confirmation number"
-                    keyboardType="numeric"
-                    maxLength={6}
-                />
-            <Button title="Next" onPress={handleConfirmationButtonPress} />
-            </View>
-        ) : (
-            <View>
-                <Text style={styles.titleText}>Welcome to Pantry</Text>
-                <Text style={styles.normalText}>We just need a bit more information before you can start reducing food waste</Text>
-                <Text style={styles.headerText}>First Name</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setFirstName}
-                    placeholder="Enter your first name"
-                    placeholderTextColor="#959D59"
-                />
-                <Text style={styles.headerText}>Last Name</Text>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setLastName}
-                    placeholder='Enter your last name'
-                    placeholderTextColor="#959D59"
-                />
-                {/* <Button title="Confirm" onPress={handleNameButtonPress} />  */}
-            {/* <Text style={styles.headerText}>Enter your mobile number</Text> */}
-            <Text style={styles.headerText}>Phone Number</Text>
-            <TextInput
-                style={styles.input}
-                // onChangeText={handleInputChange}
-                onChangeText={(text) => {
-                    const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                    if (numericText.length <= 10) {
-                      setPhoneNumber(numericText);
-                    }
-                  }}
-                value={phoneNumber}
-                placeholder="Enter your phone number"
-                placeholderTextColor="#959D59"
-                keyboardType="numeric"
-                maxLength={10}
-            />
-            <Button 
-                color="#6DC47E" 
-                title="Continue" 
-                onPress={handlePhoneNumButtonPress} 
-            />
-            </View>
-        )}
-        </View>
-    );
+	const handleNameButtonPress = async () => {
+		setShowHomeScreen(true);
+	};
+
+	return (
+		<SafeAreaView style={styles.container}>
+			<KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }} style={{ width: '100%', padding: 40 }}>
+				{showConfirmation ? (
+					<View>
+						<Text style={styles.titleText}></Text>
+						<Text style={styles.normalText}>We've sent a six digit code to {phoneNumber}. Please enter it to confirm your number</Text>
+						<TextInput
+							style={styles.input}
+							// onChangeText={setConfirmationNumber}
+							onChangeText={(text) => {
+								const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+								if (numericText.length <= 6) {
+									setConfirmationNumber(numericText);
+								}
+							}}
+							value={confirmationNumber}
+							placeholder="Confirmation number"
+							keyboardType="numeric"
+							maxLength={6}
+						/>
+						<Button title="Next" onPress={handleConfirmationButtonPress} />
+					</View>
+				) : (
+					<View>
+						<Text style={styles.titleText}>Welcome to Pantry</Text>
+						<Text style={styles.normalText}>We just need a bit more information before you can start reducing food waste</Text>
+						<Text style={styles.headerText}>First Name</Text>
+						<TextInput style={styles.input} onChangeText={setFirstName} placeholder="Enter your first name" placeholderTextColor="#959D59" />
+						<Text style={styles.headerText}>Last Name</Text>
+						<TextInput style={styles.input} onChangeText={setLastName} placeholder="Enter your last name" placeholderTextColor="#959D59" />
+						{/* <Button title="Confirm" onPress={handleNameButtonPress} />  */}
+						{/* <Text style={styles.headerText}>Enter your mobile number</Text> */}
+						<Text style={styles.headerText}>Phone Number</Text>
+						<TextInput
+							style={styles.input}
+							// onChangeText={handleInputChange}
+							onChangeText={(text) => {
+								const numericText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+								if (numericText.length <= 10) {
+									setPhoneNumber(numericText);
+								}
+							}}
+							value={phoneNumber}
+							placeholder="Enter your phone number"
+							placeholderTextColor="#959D59"
+							keyboardType="numeric"
+							maxLength={10}
+						/>
+						<Button color="#6DC47E" title="Continue" onPress={handlePhoneNumButtonPress} />
+					</View>
+				)}
+			</KeyboardAwareScrollView>
+		</SafeAreaView>
+	);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 40,
-  },
-  input: {
-    height: 40,
-    color: "#959D59",
-    borderColor: "gray",
-    backgroundColor: "#E7E9F2",
-    borderWidth: 1,
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    shadowColor: "gray",
-    shadowOpacity: 50,
-    shadowRadius: 20
-  },
-  headerText: {
-    color: '#6DC47E',
-    fontSize: 20,
-  },
-  titleText: {
-    color: '#6DC47E',
-    fontSize: 36,
-    textAlign: 'center',
-    paddingBottom: 10,
-  },
-  normalText: {
-    fontSize: 14,
-    paddingBottom: 60,
-    paddingTop: 20,
-  }
-  
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+        backgroundColor: '#F3F5FC'
+	},
+	input: {
+		height: 40,
+		color: '#959D59',
+		borderColor: 'gray',
+		backgroundColor: '#E7E9F2',
+		borderWidth: 1,
+		marginBottom: 20,
+		paddingHorizontal: 10,
+		borderRadius: 10,
+		shadowColor: 'gray',
+		shadowOpacity: 50,
+		shadowRadius: 2,
+	},
+	headerText: {
+		color: '#6DC47E',
+		fontSize: 20,
+	},
+	titleText: {
+		color: '#6DC47E',
+		fontSize: 36,
+		textAlign: 'center',
+		paddingBottom: 10,
+	},
+	normalText: {
+		fontSize: 14,
+		paddingBottom: 60,
+		paddingTop: 20,
+	},
 });
 
 export default LoginScreen;

@@ -8,8 +8,15 @@ import { Stack } from 'expo-router';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-	const [loaded] = useFonts({
-		SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+    const [loaded] = useFonts({
+		// OverpassExtraLight: require('../assets/fonts/Overpass-ExtraLight.ttf'),
+		// OverpassLight: require('../assets/fonts/Overpass-Light.ttf'),
+		// Overpass: require('../assets/fonts/Overpass-Regular.ttf'),
+		// OverpassMedium: require('../assets/fonts/Overpass-Medium.ttf'),
+		// OverpassSemiBold: require('../assets/fonts/Overpass-SemiBold.ttf'),
+		// OverpassBold: require('../assets/fonts/Overpass-Bold.ttf'),
+		// OverpassExtraBold: require('../assets/fonts/Overpass-ExtraBold.ttf'),
+		// OverpassBlack: require('../assets/fonts/Overpass-Black.ttf')
 	});
 
 	useEffect(() => {
