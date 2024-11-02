@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { FoodContext } from '@/contexts/FoodContext';
@@ -9,14 +9,11 @@ interface DataItem {
 	text: string;
 }
 
-const data = [
-	{ id: '1', text: 'Item 1' },
-	{ id: '2', text: 'Item 2' },
-	{ id: '3', text: 'Item 3' },
-];
-
 const HomeScreen = () => {
 	const { foodItems } = useContext(FoodContext);
+    const [foodData, setFoodData] = useState(foodItems)
+    console.log(foodItems)
+
 	const rowRefs = useRef<Record<string, SwipeRow<DataItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
 		<View style={styles.rowFront}>
@@ -51,7 +48,7 @@ const HomeScreen = () => {
 
 	return (
 		<SwipeListView
-			data={data}
+			data={foodData}
 			renderItem={renderItem}
 			renderHiddenItem={renderHiddenItem}
 			rightOpenValue={-225}

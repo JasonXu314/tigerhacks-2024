@@ -6,6 +6,13 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FoodContext } from '@/contexts/FoodContext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import api from '@/services/AxiosConfig';
+import * as SecureStorage from 'expo-secure-store';
+import Icon from 'react-native-vector-icons/Ionicons';
+
+interface Scan {
+	id: number;
+	text: string;
+}
 
 const CorrectionScreen = () => {
 	const { data }: { data: string } = useLocalSearchParams();
@@ -13,25 +20,34 @@ const CorrectionScreen = () => {
 	const { updateFoodItems } = useContext(FoodContext);
 
 	const [editing, setEditing] = useState(false);
-	const [foodData, setFoodData] = useState(JSON.parse(data));
+	const [foodData, setFoodData] = useState(
+		JSON.parse(data).map((str: string, i: number) => ({
+			id: i,
+			text: str,
+		}))
+	);
 
 	const pressHandler = () => {
-        api.post(`/add-food?token=${localStorage.getItem('token')}`, {
-            names: foodData
-        })
-        .then((resp) => {
-            console.log(resp.data)
-            updateFoodItems(resp.data)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
+		api.post(`/add-food?token=${SecureStorage.getItem('token')}`, {
+			names: foodData,
+		})
+			.then((resp) => {
+				console.log(resp.data);
+				updateFoodItems(resp.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 		router.back();
+	};
+
+	const deleteRow = (id: number) => {
+        setFoodData([...foodData.filter((obj: Scan) => obj.id !== id)])
 	};
 
 	return (
 		<SafeAreaView style={styles.container}>
-			<KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }} style={{width: '100%'}}>
+			<KeyboardAwareScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ flex: 1 }} style={{ width: '100%' }}>
 				<View style={{ padding: 20, height: '100%', width: '100%', justifyContent: 'center' }}>
 					<View style={styles.box}>
 						<View style={styles.header}>
@@ -39,22 +55,29 @@ const CorrectionScreen = () => {
 						</View>
 						<Text style={styles.title}>Does this look correct?</Text>
 						<ScrollView contentContainerStyle={{ display: 'flex', gap: 8 }}>
-							{foodData.map((word: string, i: number) => (
-								<>
-									{!editing && <Text key={i}>{word}</Text>}
+							{foodData.map((obj: Scan, i: number) => (
+								<View key={obj.id}>
+									{!editing && <Text>{obj.text}</Text>}
 									{editing && (
-										<TextInput
-											key={i}
-											onChangeText={(e) => {
-												let temp = foodData;
-												temp[i] = e.toUpperCase();
-												setFoodData([...temp]);
-											}}
-											value={word}
-											style={styles.input}
-										></TextInput>
+										<View style={{ display: 'flex', flexDirection: 'row', gap: 10, width: '100%' }}>
+											<TextInput
+												onChangeText={(e) => {
+													let temp = foodData;
+													const idx = temp.findIndex((ob: Scan) => ob.id === obj.id);
+													if (idx > -1) {
+														temp[idx] = e.toUpperCase();
+														setFoodData([...temp]);
+													}
+												}}
+												value={obj.text}
+												style={styles.input}
+											></TextInput>
+											<TouchableOpacity onPress={() => deleteRow(obj.id)}>
+												<Icon name="trash-outline" color="red" size={20} />
+											</TouchableOpacity>
+										</View>
 									)}
-								</>
+								</View>
 							))}
 						</ScrollView>
 						<View style={styles.row}>
@@ -140,6 +163,7 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.25,
 		shadowRadius: 1,
+		flex: 1,
 	},
 });
 
