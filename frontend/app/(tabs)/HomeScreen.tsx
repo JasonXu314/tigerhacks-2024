@@ -16,7 +16,7 @@ const data = [
 ];
 
 const HomeScreen = () => {
-	// const { foodItems } = useContext(FoodContext);
+	const { foodItems } = useContext(FoodContext);
 	const rowRefs = useRef<Record<string, SwipeRow<DataItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
 		<View style={styles.rowFront}>
@@ -28,7 +28,7 @@ const HomeScreen = () => {
 		<View style={styles.rowBack}>
             <TouchableOpacity style={[styles.box, {backgroundColor: '#439C54'}]}>
                 <Icon name="globe-outline" color="#fff" size={20} />
-                <Text style={styles.boxText}>{rowMap['1'].item.id}</Text>
+                <Text style={styles.boxText}>Public</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.box, {backgroundColor: '#5BB46C'}]}>
                 <Icon name="person-outline" color="#fff" size={20} />

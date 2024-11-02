@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import api from "@/services/AxiosConfig";
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import * as SecureStore from 'expo-secure-store';
 
 import HomeScreen from "@/app/(tabs)/HomeScreen";
 import { useRouter } from "expo-router";
@@ -25,36 +25,6 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
 
     const router = useRouter();
 
-    useEffect(() => {
-        const checkToken = async () => { // Make the function async
-          try {
-            const storedToken = await AsyncStorage.getItem('token'); // Use AsyncStorage.getItem
-            if (storedToken) {
-              setToken(storedToken); 
-            //   router.navigate('/HomeScreen'); 
-            }
-          } catch (error) {
-            console.error('Error retrieving token from AsyncStorage:', error);
-          }
-        };
-    
-        checkToken(); 
-      }, []);
-    
-      useEffect(() => {
-        const saveToken = async () => { // Make the function async
-          try {
-            if (token) {
-              await AsyncStorage.setItem('token', token); // Use AsyncStorage.setItem
-            }
-          } catch (error) {
-            console.error('Error saving token to AsyncStorage:', error);
-          }
-        };
-    
-        saveToken();
-      }, [token]);
-
     const handleInputChange = (text: string) => {
         setPhoneNumber(text);
     };
@@ -72,7 +42,7 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
                 setToken(response.data["token"])
                 
                 setShowConfirmation(true);
-            } catch (error) {
+            } catch (error: any) {
                 if (error.response.data['statusCode'] == 400) {
                     setShowConfirmation(true)
                 }
@@ -92,10 +62,11 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
             console.log(response.data);
             const verified = response.data['verified']
             if (verified) {
+                SecureStore.setItem('token', token);
                 router.navigate('/HomeScreen')
             } 
             
-        } catch (error) {
+        } catch (error: any) {
             // console.log(error.response.data['statusCode'])
             if (error.response.data['statusCode'] == 400) {
                 Alert.alert('Incorrect code', 'The code you entered is incorrect. Please try again.')
@@ -112,10 +83,6 @@ const LoginScreen = ({setIsLoggedIn} : Props) => {
     const handleNameButtonPress = async () => {
         setShowHomeScreen(true);
     };
-
-    useEffect(() => {
-        console.log("Token:", token); 
-      }, [token]);
 
     return (
         <View style={styles.container}>
