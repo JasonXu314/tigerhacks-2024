@@ -1,12 +1,13 @@
-import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
 import BackArrow from '@/components/BackArrow';
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FoodContext } from '@/contexts/FoodContext';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { FoodItem } from '@/interfaces/FoodItem';
 import api from '@/services/AxiosConfig';
+import notifee, { TriggerType } from '@notifee/react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
+import React, { useContext, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface Scan {
@@ -23,7 +24,7 @@ const CorrectionScreen = () => {
 	const [foodData, setFoodData] = useState(
 		JSON.parse(data).map((str: string, i: number) => ({
 			id: i,
-			text: str,
+			text: str
 		}))
 	);
 
@@ -31,12 +32,37 @@ const CorrectionScreen = () => {
 		const foods = foodData.map((item: Scan) => {
 			return item['text'];
 		});
-		api.post(`/add-food?token=${SecureStorage.getItem('token')}`, {
-			names: foods,
+		api.post<FoodItem[]>(`/add-food?token=${SecureStorage.getItem('token')}`, {
+			names: foods
 		})
 			.then((resp) => {
 				console.log(resp.data);
 				updateFoodItems(resp.data);
+
+				notifee.getTriggerNotificationIds().then((ids) => {
+					resp.data.forEach(({ name, expDate, boughtDate, id }) => {
+						if (!ids.includes(id.toString())) {
+							const remaining = Math.max(
+								0.75 * (new Date(expDate).getTime() - new Date(boughtDate).getTime()),
+								new Date(expDate).getTime() - new Date(boughtDate).getTime() - 30 * 24 * 60 * 60 * 1000
+							);
+
+							const [timeLeft, units] =
+								remaining > 7 * 24 * 60 * 60 * 1000
+									? [Math.floor(remaining / (7 * 24 * 60 * 60 * 1000)), 'weeks']
+									: [Math.floor(remaining / (24 * 60 * 60 * 1000)), 'days'];
+
+							notifee.createTriggerNotification(
+								{
+									title: 'Food Expiring',
+									body: `Your ${name} are expiring in ${timeLeft} ${units}!`,
+									id: id.toString()
+								},
+								{ type: TriggerType.TIMESTAMP, timestamp: new Date(boughtDate).getTime() + remaining }
+							);
+						}
+					});
+				});
 			})
 			.catch((err) => {
 				console.log(err);
@@ -73,8 +99,7 @@ const CorrectionScreen = () => {
 													}
 												}}
 												value={obj.text}
-												style={styles.input}
-											></TextInput>
+												style={styles.input}></TextInput>
 											<TouchableOpacity onPress={() => deleteRow(obj.id)}>
 												<Icon name="trash-outline" color="red" size={20} />
 											</TouchableOpacity>
@@ -113,7 +138,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: '#F3F5FC',
-		height: '100%',
+		height: '100%'
 	},
 	box: {
 		width: '100%',
@@ -121,21 +146,21 @@ const styles = StyleSheet.create({
 		padding: 20,
 		backgroundColor: 'white',
 		borderRadius: 15,
-		gap: 15,
+		gap: 15
 	},
 	header: {
 		height: 40,
 		width: '100%',
-		justifyContent: 'center',
+		justifyContent: 'center'
 	},
 	title: {
 		color: '#6DC47E',
-		fontSize: 26,
+		fontSize: 26
 	},
 	row: {
 		display: 'flex',
 		flexDirection: 'row',
-		gap: 10,
+		gap: 10
 	},
 	editButton: {
 		backgroundColor: '#6DC47E',
@@ -145,7 +170,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 15,
-		paddingHorizontal: 40,
+		paddingHorizontal: 40
 	},
 	button: {
 		backgroundColor: '#439C54',
@@ -155,7 +180,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		flex: 1,
-		padding: 15,
+		padding: 15
 	},
 	input: {
 		width: '100%',
@@ -166,8 +191,9 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.25,
 		shadowRadius: 1,
-		flex: 1,
-	},
+		flex: 1
+	}
 });
 
 export default CorrectionScreen;
+

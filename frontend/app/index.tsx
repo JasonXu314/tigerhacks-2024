@@ -1,3 +1,4 @@
+import notifee from '@notifee/react-native';
 import { Redirect } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
 import { useEffect, useState } from 'react';
@@ -10,6 +11,8 @@ const Index = () => {
 		if (userToken) {
 			setToken(userToken);
 		}
+
+		notifee.requestPermission();
 	}, []);
 
 	if (token) {
