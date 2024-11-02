@@ -8,5 +8,9 @@ export class AddFoodsDTO {
 
 export class OfferFoodDTO {
 	@IsString()
-	location: string = fi();
+	lat: string = fi();
+
+	@IsString()
+	lng: string = fi();
 }
+

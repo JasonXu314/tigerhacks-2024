@@ -9,7 +9,42 @@ export class FoodsService {
 	public constructor() {
 		this.data = axios
 			.get<{ category_data: any[]; product_data: FoodData[] }>('https://www.foodsafety.gov/sites/default/files/foodkeeper_data_url_en.json')
-			.then((res) => res.data.product_data);
+			.then((res) =>
+				res.data.product_data.concat(
+					(
+						[
+							['potatoes', '10 - 12 months', '2 weeks', null],
+							['brussel sprouts', '12 - 14 months', '1 - 2 weeks', '3 - 4 days'],
+							['grapes', '3 months', '1 - 2 weeks', null],
+							['snow peas', '10 - 12 months', '1 week', null],
+							['banana', '2 - 3 months', '2 - 9 days', '2 - 7 days']
+						] as const
+					).map(([name, freeze, fridge, pantry]) => ({
+						category_id: '',
+						category_name_display_only: '',
+						from_date_of_purchase_freeze_output_display_only: freeze,
+						from_date_of_purchase_refrigerate_output_display_only: fridge,
+						id: '',
+						keywords: '',
+						name,
+						pantry_tips: '',
+						freeze_output_display_only: null,
+						freeze_tips: null,
+						from_date_of_purchase_freeze_tips: null,
+						from_date_of_purchase_pantry_output_display_only: pantry,
+						from_date_of_purchase_pantry_tips: null,
+						from_date_of_purchase_refrigerate_tips: null,
+						name_subtitle: null,
+						pantry_after_opening_output_display_only: null,
+						pantry_output_display_only: null,
+						refrigerate_after_opening_output_display_only: null,
+						refrigerate_after_thawing_output_display_only: null,
+						refrigerate_output_display_only: null,
+						refrigerate_tips: null,
+						subcategory_name_display_only: null
+					}))
+				)
+			);
 	}
 
 	public async getExpDate(name: string, boughtDate: Date): Promise<Date> {
@@ -27,7 +62,7 @@ export class FoodsService {
 						Number(q.includes(food.name)) +
 						Number(vws.includes(qws)) +
 						Number(qws.includes(vws)) +
-						Number(qFrags.every((f) => vFrags.some((fragment) => fragment.includes(f) || f.includes(fragment))))
+						Number(qFrags.reduce((t, f) => (vFrags.some((fragment) => fragment.includes(f) || f.includes(fragment)) ? t + 1 : t), 0))
 				];
 			})
 			.filter(([, score]) => score > 0)
@@ -50,15 +85,22 @@ export class FoodsService {
 					: Number(match[1].trim());
 				const unit = match[2].trim();
 
-				if (unit === 'months') {
+				if (unit.toLowerCase() === 'months' || unit.toLowerCase() === 'month') {
 					return new Date(boughtDate.valueOf() + qty * 30 * 24 * 60 * 60 * 1000);
+				} else if (unit.toLowerCase() === 'weeks' || unit.toLowerCase() === 'week') {
+					return new Date(boughtDate.valueOf() + qty * 7 * 24 * 60 * 60 * 1000);
+				} else if (unit.toLowerCase() === 'days' || unit.toLowerCase() === 'day') {
+					return new Date(boughtDate.valueOf() + qty * 24 * 60 * 60 * 1000);
 				} else {
+					console.log(`Unrecognized unit ${unit}`);
 					throw new InternalServerErrorException(`Unrecognized unit ${unit}`);
 				}
 			} else {
+				console.log(`No match for ${rawExp}`);
 				throw new InternalServerErrorException(`No match for ${rawExp}`);
 			}
 		} else {
+			console.log(`${name} not found`);
 			throw new NotFoundException(`${name} not found`);
 		}
 	}
