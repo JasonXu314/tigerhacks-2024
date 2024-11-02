@@ -2,6 +2,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router } from 'expo-router';
 import { StyleSheet } from 'react-native';
 
+
 const BackArrow = () => (
 	<Ionicons
 		name='chevron-back-outline'

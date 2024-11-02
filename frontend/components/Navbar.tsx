@@ -52,7 +52,7 @@ function CameraButton({ children }: Props) {
                     if (resp.data) {
                         router.navigate({
                             pathname: '/screens/Correction',
-                            params: { data: resp.data }
+                            params: { data: resp.data, test: 'hi' }
                         })
                     }
 				})
