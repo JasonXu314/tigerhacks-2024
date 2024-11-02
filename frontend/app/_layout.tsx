@@ -29,6 +29,7 @@ export default function RootLayout() {
 				<Stack.Screen name="LandingPage" options={{ headerShown: false }} />
 				<Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
 				<Stack.Screen name="CorrectionScreen" options={{ headerShown: false }} />
+				<Stack.Screen name="ContactsScreen" options={{ headerShown: false }} />
 				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 				<Stack.Screen name="+not-found" options={{ headerShown: false }} />
 			</Stack>
