@@ -6,6 +6,7 @@ import { spawn } from 'child_process';
 import { readFileSync, rmSync, writeFileSync } from 'fs';
 import { DBService } from 'src/db/db.service';
 import { FoodsService } from 'src/foods/foods.service';
+import { publicAttrs } from 'src/users/users.models';
 import { AddFoodsDTO } from './pantry.dtos';
 import { OCRLine, Recipe } from './pantry.models';
 
@@ -52,14 +53,22 @@ export class PantryService {
 
 	public async addFoods(dto: AddFoodsDTO, user: User): Promise<FoodItem[]> {
 		const now = new Date();
-
+		console.log(user);
 		const foods = await Promise.all(
 			dto.names.map(async (name) => ({
 				userId: user.id,
 				name,
 				boughtDate: now,
 				expDate: await this.foods.getExpDate(name, now),
-				image: ''
+				image:
+					[
+						['potatoes', '🥔'],
+						['grapes', '🍇'],
+						['snow peas', '🫛'],
+						['steak', '🥩'],
+						['buns', '🥖'],
+						['toast', '🍞']
+					].reduce((emote, [n, e]) => (name.toLowerCase().includes(n) ? e : emote), '') || '🥬'
 			}))
 		);
 
@@ -67,6 +76,7 @@ export class PantryService {
 			data: foods
 		});
 
+		console.log(user);
 		return this.db.foodItem.findMany({ where: { userId: user.id } });
 	}
 
@@ -82,8 +92,24 @@ export class PantryService {
 		});
 	}
 
+	public async getOffers(location?: string) {
+		return this.db.foodOffer.findMany({
+			where: { location },
+			include: {
+				foodItem: true,
+				owner: publicAttrs
+			}
+		});
+	}
+
 	public async offerFood(id: number, user: User, location: string): Promise<FoodOffer> {
-		return this.db.foodOffer.create({ data: { foodItem: { connect: { userId_id: { id, userId: user.id } } }, location } });
+		return this.db.foodOffer.create({
+			data: { foodItem: { connect: { userId_id: { id, userId: user.id } } }, owner: { connect: { id: user.id } }, location }
+		});
+	}
+
+	public async deleteOffer(userId: string, foodId: number): Promise<void> {
+		await this.db.foodOffer.delete({ where: { userId_foodId: { userId, foodId } } });
 	}
 
 	public async completeOffer(id: number, user: User): Promise<void> {
@@ -103,7 +129,6 @@ export class PantryService {
 		const match = /^([^$@]+)\s*\$.*/.exec(ocrLine);
 
 		if (match) {
-			console.log(match, match[1]);
 			return match[1].trim();
 		} else {
 			return null;

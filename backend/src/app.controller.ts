@@ -1,6 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FoodItem, FoodOffer, User as UserT } from '@prisma/client';
+import axios from 'axios';
 import { Protected } from './auth/protected.decorator';
 import { AddFoodsDTO, OfferFoodDTO } from './pantry/pantry.dtos';
 import { Recipe } from './pantry/pantry.models';
@@ -13,15 +14,31 @@ export class AppController {
 	constructor(private readonly service: PantryService) {}
 
 	@Page()
-	@Get('/')
-	public index(): PageProps {
-		return {};
+	@Get('/users/:id/pantry')
+	public async getPantryAdmin(@Param('id') id: string): Promise<PageProps<UserPantryAdminProps>> {
+		return {
+			items: await this.service.getFoods({ id } as UserT)
+		};
+	}
+
+	@Page()
+	@Get('/browse')
+	public async browseOffers(@Query('location') location?: string): Promise<PageProps<BrowseOffersProps>> {
+		return {
+			offers: await this.service.getOffers(location)
+		};
 	}
 
 	@Post('/parse-receipt')
 	@UseInterceptors(FileInterceptor('receipt'))
 	public async parseReceipt(@UploadedFile() file: Express.Multer.File): Promise<string[]> {
 		return this.service.parseImage(file.buffer);
+	}
+
+	@Protected()
+	@Get('/pantry')
+	public async getPantry(@User() user: UserT): Promise<FoodItem[]> {
+		return this.service.getFoods(user);
 	}
 
 	@Protected()
@@ -42,10 +59,29 @@ export class AppController {
 		return this.service.getRecipes(user);
 	}
 
+	@Get('/city')
+	public async getCity(@Query() data: OfferFoodDTO): Promise<string> {
+		return axios
+			.get(`https://api.geoapify.com/v1/geocode/reverse?apiKey=${process.env.GEOAPIFY_KEY}&lat=${data.lat}&lon=${data.lng}&type=city&format=json`)
+			.then((req) => req.data.results[0].city);
+	}
+
 	@Protected()
 	@Post('/food-item/:id/offer')
 	public async offerItem(@Param('id', ParseIntPipe) id: number, @Body() data: OfferFoodDTO, @User() user: UserT): Promise<FoodOffer> {
-		return this.service.offerFood(id, user, data.location);
+		const city = await this.getCity(data);
+
+		return this.service.offerFood(id, user, city);
+	}
+
+	@Delete('/:userId/offers/:id')
+	public async deleteOffer(@Param('userId') userId: string, @Param('id', ParseIntPipe) id: number): Promise<void> {
+		return this.service.deleteOffer(userId, id);
+	}
+
+	@Get('/offers')
+	public async getOfferedItems(@Query('lat') lat: string, @Query('lng') lng: string) {
+		return this.service.getOffers(await this.getCity({ lat, lng }));
 	}
 }
 

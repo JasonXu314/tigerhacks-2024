@@ -22,6 +22,7 @@ model User {
     verified  Boolean
 
     pantry FoodItem[]
+    offers FoodOffer[]
 
     @@unique([firstName, lastName])
 }
@@ -47,6 +48,7 @@ model FoodOffer {
     location String
 
     foodItem FoodItem @relation(fields: [userId, foodId], references: [userId, id])
+    owner    User     @relation(fields: [userId], references: [id])
 
     @@id([userId, foodId])
 }

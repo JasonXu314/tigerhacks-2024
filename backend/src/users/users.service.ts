@@ -80,7 +80,6 @@ export class UsersService implements AuthDataSource {
 	}
 
 	public async claim(code: string, user: User): Promise<User> {
-		console.log(this.codes);
 		if (this.codes.get(user.token) === code) {
 			return this.db.user.update({ where: { id: user.id }, data: { verified: true } });
 		} else {
