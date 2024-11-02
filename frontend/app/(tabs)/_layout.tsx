@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, Button, StyleSheet, Alert, Modal } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import HomeScreen from '@/app/(tabs)/HomeScreen';
-import RecipesScreen from '@/app/(tabs)/RecipesScreen';
-import ClaimScreen from '@/app/(tabs)/ClaimScreen';
-import MapScreen from '@/app/(tabs)/MapScreen';
 import * as ImagePicker from 'expo-image-picker';
 import api from '@/services/AxiosConfig';
 import { router, useNavigation } from 'expo-router';
 import { Tabs } from 'expo-router';
-
-const Tab = createBottomTabNavigator();
+import CharityColored from '@/components/TabIcons/CharityColored';
+import Charity from '@/components/TabIcons/Charity';
+import SearchColored from '@/components/TabIcons/SearchColored';
+import RecipesColored from '@/components/TabIcons/RecipesColored';
+import Recipes from '@/components/TabIcons/Recipes';
+import Search from '@/components/TabIcons/Search';
+import PantryColored from '@/components/TabIcons/PantryColored';
+import Pantry from '@/components/TabIcons/Pantry';
 
 interface Props {
 	children?: any;
@@ -20,7 +21,6 @@ interface Props {
 function CameraButton({ children }: Props) {
 	const [image, setImage] = useState<string | null>(null);
 	const [hasPermission, setHasPermission] = useState<boolean>(false);
-	const nav = useNavigation();
 
 	useEffect(() => {
 		(async () => {
@@ -78,7 +78,7 @@ function CameraButton({ children }: Props) {
 						width: 60,
 						height: 60,
 						borderRadius: 30,
-						backgroundColor: '#e32f45',
+						backgroundColor: '#6DC47E',
 						display: 'flex',
 						justifyContent: 'center',
 						alignItems: 'center',
@@ -106,20 +106,34 @@ const Navbar = () => {
 					height: 65,
 					...styles.shadow,
 				},
+                headerStyle: {
+                    backgroundColor: '#6DC47E',
+                    height: 150,
+                  },
+                  headerTintColor: '#fff',
+                  headerTitleStyle: {
+                    fontSize: 36,
+                    paddingLeft: 10
+                  },
+                  headerTitleAlign: 'left'
 			}}
 		>
 			<Tabs.Screen
 				name="HomeScreen"
 				options={{
-					tabBarIcon: ({ focused }) => <Icon style={{ marginBottom: -25 }} name="home-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />,
+					tabBarIcon: ({ focused }) => (
+						focused ? <PantryColored style={{marginBottom: -25}}/> : <Pantry style={{marginBottom: -25}}/>
+					),
+                    title: "My Pantry"
 				}}
 			/>
 			<Tabs.Screen
 				name="RecipesScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (
-						<Icon style={{ marginBottom: -25 }} name="notifications-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
+						focused ? <RecipesColored style={{marginBottom: -25}}/> : <Recipes style={{marginBottom: -25}}/>
 					),
+                    title: "Recipes"
 				}}
 			/>
 			<Tabs.Screen
@@ -129,19 +143,21 @@ const Navbar = () => {
 				}}
 			/>
 			<Tabs.Screen
-				name="ClaimScreen"
-				options={{
-					tabBarIcon: ({ focused }) => (
-						<Icon style={{ marginBottom: -25 }} name="person-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
-					),
-				}}
-			/>
-			<Tabs.Screen
 				name="MapScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (
-						<Icon style={{ marginBottom: -25 }} name="settings-outline" color={focused ? '#e32f45' : '#748c94'} size={24} />
+						focused ? <CharityColored style={{marginBottom: -25}}/> : <Charity style={{marginBottom: -25}}/>
 					),
+                    title: "Donation Centers"
+				}}
+			/>
+			<Tabs.Screen
+				name="ClaimScreen"
+				options={{
+					tabBarIcon: ({ focused }) => (
+						focused ? <SearchColored style={{marginBottom: -25}}/> : <Search style={{marginBottom: -25}}/>
+					),
+                    title: "Search for Food"
 				}}
 			/>
 		</Tabs>
@@ -150,8 +166,8 @@ const Navbar = () => {
 
 const styles = {
 	shadow: {
-		shadowColor: '#7F5DF0',
-		shadowOffset: { width: 0, height: 10 },
+		shadowColor: '#000000',
+		shadowOffset: { width: 0, height: 5 },
 		shadowOpacity: 0.25,
 		shadowRadius: 3.5,
 		elevation: 5,

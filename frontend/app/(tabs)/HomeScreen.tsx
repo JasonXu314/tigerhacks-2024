@@ -6,7 +6,7 @@ import { FoodContext } from '@/contexts/FoodContext';
 interface DataItem {
 	id: string;
 	text: string;
-  }
+}
 
 const data = [
 	{ id: '1', text: 'Item 1' },
@@ -16,7 +16,7 @@ const data = [
 
 const HomeScreen = () => {
 	// const { foodItems } = useContext(FoodContext);
-	const rowRefs = useRef<Record<string, SwipeRow<DataItem>>>(null); 
+	const rowRefs = useRef<Record<string, SwipeRow<DataItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
 		<View style={styles.rowFront}>
 			<Text>{item.text}</Text>
@@ -33,24 +33,32 @@ const HomeScreen = () => {
 
 	const onSwipeValueChange = (swipeData: any) => {
 		const { key, value } = swipeData;
-		if (value < -20 && rowRefs.current) { // Check if rowRefs.current is not null
+		if (value < -20 && rowRefs.current) {
+			// Check if rowRefs.current is not null
 			rowRefs.current[key].manuallySwipeRow(-225);
 		}
 	};
 
-	return <SwipeListView 
-				data={data} 
-				renderItem={renderItem} 
-				renderHiddenItem={renderHiddenItem} 
-				rightOpenValue={-225}
-				disableRightSwipe={true}
-				// friction={10}
-				// tension={10}
-				onSwipeValueChange={onSwipeValueChange}
-				// previewRowKey={'0'}
-				// previewOpenValue={-40}
-				// previewOpenDelay={3000}
-			/>;
+	return (
+		<SwipeListView
+			data={data}
+			renderItem={renderItem}
+			renderHiddenItem={renderHiddenItem}
+			rightOpenValue={-150}
+			disableRightSwipe={true}
+			// friction={10}
+			// tension={10}
+
+			tension={200} // Adjust the tension for faster snapping
+            friction={10}
+            previewOpenValue={-40} // Adjust the preview open value
+      previewOpenDelay={300} // Adjust the preview open delay
+			onSwipeValueChange={onSwipeValueChange}
+			// previewRowKey={'0'}
+			// previewOpenValue={-40}
+			// previewOpenDelay={3000}
+		/>
+	);
 };
 
 const styles = StyleSheet.create({

@@ -1,22 +1,26 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
-import { FoodContext } from '@/contexts/FoodContext';
 import BackArrow from '@/components/BackArrow';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FoodContext } from '@/contexts/FoodContext';
 
 const CorrectionScreen = () => {
 	const { data } : { data: string[] } = useLocalSearchParams();
+    const router = useRouter();
+    const { updateFoodItems } = useContext(FoodContext);
+    const [foodData, setFoodData] = useState(data);
 
 	const pressHandler = () => {
-        
+        updateFoodItems([]);
+        router.back()
     };
 
 	return (
 		<SafeAreaView>
 			<BackArrow></BackArrow>
 			<Text>Does this look correct?</Text>
-			{data.map((word) => (
+			{foodData.map((word) => (
 				<Text>{word}</Text>
 			))}
 			<TouchableOpacity style={styles.button} onPress={pressHandler}>
