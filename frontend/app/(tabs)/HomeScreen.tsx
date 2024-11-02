@@ -4,13 +4,15 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { FoodContext } from '@/contexts/FoodContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 import api from '@/services/AxiosConfig';
-import { createContext, ReactNode, useEffect } from 'react';
 import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
 import * as Location from "expo-location";
+import * as Contacts from "expo-contacts";
+import { useRouter } from 'expo-router';
 
 const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
+    const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
@@ -57,7 +59,6 @@ const HomeScreen = () => {
           } catch (error) {
             console.error("Error requesting location permission:", error);
           }
-
     }
 
 	const renderHiddenItem = (data: any, rowMap: any) => (
@@ -66,7 +67,7 @@ const HomeScreen = () => {
 				<Icon name="globe-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Public</Text>
 			</TouchableOpacity>
-			<TouchableOpacity style={[styles.box, { backgroundColor: '#5BB46C' }]}>
+			<TouchableOpacity style={[styles.box, { backgroundColor: '#5BB46C' }]} onPress={() => router.navigate({pathname: '/ContactsScreen', params: {food: data.item}})}>
 				<Icon name="person-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Friends</Text>
 			</TouchableOpacity>

@@ -1,14 +1,13 @@
-import { View, SafeAreaView, Text, Button } from "react-native";
-import { router, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import React, { useEffect, useState } from 'react';
+import { FlatList, View, Text, StyleSheet, SafeAreaView } from 'react-native';
+
 
 const RecipesScreen = () => {
-    const router = useRouter();
-
-    return (
+	return (
         <SafeAreaView>
-            <Button title="aaaa" onPress={() => router.navigate({pathname: '/ClaimScreen' })}></Button>
         </SafeAreaView>
-    );
-}
- 
+    )
+};
+const styles = StyleSheet.create({
+});
 export default RecipesScreen;
