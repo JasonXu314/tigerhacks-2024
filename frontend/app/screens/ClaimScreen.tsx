@@ -1,11 +1,20 @@
-import { View, SafeAreaView, Text, Button } from "react-native";
+import { View, SafeAreaView, Text, Button, StyleSheet } from "react-native";
+import MapView from 'react-native-maps';
 
-const ClaimScreen = () => {
-    return (
-        <SafeAreaView>
-            
-        </SafeAreaView>
-    );
+export default function ClaimScreen() {
+  return (
+    <SafeAreaView style={styles.container}>
+      <MapView style={styles.map} />
+    </SafeAreaView>
+  );
 }
- 
-export default ClaimScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+  },
+});

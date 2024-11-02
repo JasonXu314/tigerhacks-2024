@@ -8,6 +8,7 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen';
 import RecipesScreen from './screens/RecipesScreen';
 import Navbar from '@/components/Navbar';
+import { FoodProvider } from '@/contexts/FoodContext';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -33,14 +34,16 @@ export default function RootLayout() {
 	}
 
 	return (
-		<Stack.Navigator>
-			{isLoggedIn ? (
-				<Stack.Screen name="screens/HomeScreen" component={Navbar} options={{ headerShown: false }} />
-			) : (
-				<Stack.Screen name="screens/LoginScreen" options={{ headerShown: false }}>
-					{(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
-				</Stack.Screen>
-			)}
-		</Stack.Navigator>
+		<FoodProvider>
+			<Stack.Navigator>
+				{isLoggedIn ? (
+					<Stack.Screen name="screens/HomeScreen" component={Navbar} options={{ headerShown: false }} />
+				) : (
+					<Stack.Screen name="screens/LoginScreen" options={{ headerShown: false }}>
+						{(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+					</Stack.Screen>
+				)}
+			</Stack.Navigator>
+		</FoodProvider>
 	);
 }
