@@ -6,6 +6,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import api from '@/services/AxiosConfig';
 
 Notifications.setNotificationHandler({
 	handleNotification: async () => ({
@@ -47,7 +48,13 @@ const Index = () => {
 	useEffect(() => {
 		const userToken = SecureStore.getItem('token');
 		if (userToken) {
-			setToken(userToken);
+			api.get(`/me?token=${userToken}`)
+				.then((resp) => {
+					setToken(userToken);
+				})
+				.catch((err) => {
+					SecureStore.deleteItemAsync('token');
+				});
 		}
 	}, []);
 
