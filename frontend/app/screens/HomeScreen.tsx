@@ -1,7 +1,12 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SwipeListView } from 'react-native-swipe-list-view';
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { FoodContext } from '@/contexts/FoodContext';
+
+interface DataItem {
+	id: string;
+	text: string;
+  }
 
 const data = [
 	{ id: '1', text: 'Item 1' },
@@ -10,8 +15,8 @@ const data = [
 ];
 
 const HomeScreen = () => {
-	const { foodItems } = useContext(FoodContext);
-
+	// const { foodItems } = useContext(FoodContext);
+	const rowRefs = useRef<Record<string, SwipeRow<DataItem>>>(null); 
 	const renderItem = ({ item }: { item: any }) => (
 		<View style={styles.rowFront}>
 			<Text>{item.text}</Text>
@@ -20,16 +25,47 @@ const HomeScreen = () => {
 
 	const renderHiddenItem = (data: any, rowMap: any) => (
 		<View style={styles.rowBack}>
-			<Text style={styles.backRightBtn}>Delete</Text>
-			<Text style={styles.backRightBtn}>Delete</Text>
+			<Text style={styles.rowPublic}>Public</Text>
+			<Text style={styles.rowFamily}>Family</Text>
 			<Text style={styles.backRightBtn}>Delete</Text>
 		</View>
 	);
 
-	return <SwipeListView data={data} renderItem={renderItem} renderHiddenItem={renderHiddenItem} rightOpenValue={-75} />;
+	const onSwipeValueChange = (swipeData: any) => {
+		const { key, value } = swipeData;
+		if (value < -20 && rowRefs.current) { // Check if rowRefs.current is not null
+			rowRefs.current[key].manuallySwipeRow(-225);
+		}
+	};
+
+	return <SwipeListView 
+				data={data} 
+				renderItem={renderItem} 
+				renderHiddenItem={renderHiddenItem} 
+				rightOpenValue={-225}
+				disableRightSwipe={true}
+				// friction={10}
+				// tension={10}
+				onSwipeValueChange={onSwipeValueChange}
+				// previewRowKey={'0'}
+				// previewOpenValue={-40}
+				// previewOpenDelay={3000}
+			/>;
 };
 
 const styles = StyleSheet.create({
+	rowPublic: {
+		backgroundColor: 'green',
+		color: 'white',
+		padding: 10,
+		borderRadius: 5,
+	},
+	rowFamily: {
+		backgroundColor: 'blue',
+		color: 'white',
+		padding: 10,
+		borderRadius: 5,
+	},
 	rowFront: {
 		backgroundColor: 'white',
 		padding: 20,
