@@ -1,10 +1,10 @@
-import { View } from "react-native";
+import { View, SafeAreaView, Text, Button } from "react-native";
 
 const MapScreen = () => {
     return (
-        <View>
+        <SafeAreaView>
             
-        </View>
+        </SafeAreaView>
     );
 }
  
