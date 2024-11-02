@@ -69,6 +69,16 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 		}
 	};
 
+    const resendCode = () => {
+        api.post(`/users/resend?token=${token}`)
+        .then((resp) => {
+            console.log(resp.data)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
+
 	return (
 		<SafeAreaView style={styles.container}>
 			{showConfirmation && (
@@ -78,7 +88,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 						size={30}
 						color="#6DC47E"
 						onPress={() => {
-							setShowConfirmation(false)
+							setShowConfirmation(false);
 						}}
 					/>
 				</View>
@@ -88,8 +98,18 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 				{showConfirmation ? (
 					<>
 						<View style={{ height: '70%', justifyContent: 'flex-end', gap: 30, paddingBottom: 30 }}>
-							<Text style={[styles.titleText, {textAlign: 'left', marginBottom: -15}]}>Enter code</Text>
+							<Text style={[styles.titleText, { textAlign: 'left', marginBottom: -15 }]}>Enter code</Text>
 							<Text style={styles.description}>We've sent a six digit code to {phoneNumber}. Please enter it to confirm your number.</Text>
+                            <View style={{alignItems: 'center', flexDirection: 'row'}}>
+                            <Text style={styles.didntReceive}>
+								Didn't receive a text?{' '}
+							
+							</Text>
+                            <TouchableOpacity onPress={() => resendCode()}>
+									<Text style={{ color: '#6DC47E', textDecorationLine: 'underline' }}>Resend code</Text>
+								</TouchableOpacity>
+                            </View>
+							
 							<CodeField
 								ref={ref}
 								{...props}
@@ -102,7 +122,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 								testID="my-code-input"
 								renderCell={({ index, symbol, isFocused }) => (
 									<Text key={index} style={[styles.cell, isFocused && styles.focusCell]} onLayout={getCellOnLayoutHandler(index)}>
-										{symbol || (isFocused ? <Cursor /> : "-")}
+										{symbol || (isFocused ? <Cursor /> : '-')}
 									</Text>
 								)}
 							/>
@@ -192,6 +212,9 @@ const styles = StyleSheet.create({
 		fontFamily: 'JostRegular',
 		fontSize: 16,
 	},
+	didntReceive: {
+		fontSize: 13,
+	},
 	button: {
 		backgroundColor: '#6DC47E',
 		borderRadius: 20,
@@ -214,7 +237,7 @@ const styles = StyleSheet.create({
 	title: {
 		textAlign: 'center',
 		fontSize: 30,
-        fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular',
 	},
 	codeFieldRoot: {},
 	cell: {

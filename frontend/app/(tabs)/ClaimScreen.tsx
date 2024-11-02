@@ -8,6 +8,7 @@ import { createContext, ReactNode, useEffect } from 'react';
 import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
 import * as Location from 'expo-location';
+import { router } from 'expo-router';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<FoodItem[]>([]);
@@ -87,9 +88,10 @@ export default function ClaimScreen() {
 			<TouchableOpacity
 				onPress={() => {
 					SecureStorage.deleteItemAsync('token');
+                    router.navigate('/LoginScreen')
 				}}
 			>
-				<Text>clear storage</Text>
+				<Text>LOG OUT</Text>
 			</TouchableOpacity>
 			<SwipeListView
 				data={foodData}
