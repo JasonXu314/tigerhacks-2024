@@ -118,7 +118,8 @@ export class UsersService implements AuthDataSource {
 						number
 					},
 					mergeTags: {
-						user: user.firstName,
+						first: user.firstName,
+						last: user.lastName,
 						food: food.name,
 						number: user.phone
 					}
