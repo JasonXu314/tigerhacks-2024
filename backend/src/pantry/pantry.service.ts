@@ -114,8 +114,16 @@ export class PantryService {
 
 	public async getDetails(recipeId: number): Promise<FullRecipe & { instructions: Instruction[] }> {
 		return Promise.all([
-			axios.get<FullRecipe>(`https://api.spoonacular.com/recipes/${recipeId}/information`).then((res) => res.data),
-			axios.get<Instruction[]>(`https://api.spoonacular.com/recipes/${recipeId}/analyzedInstructions`).then((res) => res.data)
+			axios
+				.get<FullRecipe>(`https://api.spoonacular.com/recipes/${recipeId}/information`, {
+					headers: { 'X-Api-Key': process.env.SPOONACULAR_KEY! }
+				})
+				.then((res) => res.data),
+			axios
+				.get<Instruction[]>(`https://api.spoonacular.com/recipes/${recipeId}/analyzedInstructions`, {
+					headers: { 'X-Api-Key': process.env.SPOONACULAR_KEY! }
+				})
+				.then((res) => res.data)
 		]).then<FullRecipe & { instructions: Instruction[] }>(([recipe, instructions]) => ({ ...recipe, instructions }));
 	}
 
