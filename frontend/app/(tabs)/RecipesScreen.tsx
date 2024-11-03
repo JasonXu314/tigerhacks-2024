@@ -3,11 +3,15 @@ import { View, SafeAreaView, Text, Button, FlatList, StyleSheet, Image, Touchabl
 import { router, useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import api from '@/services/AxiosConfig';
 import * as SecureStore from 'expo-secure-store';
+import Book from '@/components/bg/Book';
 
 const RecipesScreen = () => {
     const [recipes, setRecipes] = useState([]);
 
-    console.log(SecureStore.getItem('token'))
+    // console.log(SecureStore.getItem('token'))
+    useEffect(() => {
+      handlePress();
+    }, [])
 
     const handlePress = async () => {
         try {
@@ -54,13 +58,20 @@ const RecipesScreen = () => {
         <SafeAreaView>
             <Button title="test api" onPress={handlePress} />
             <Button title='test /recipe-details' onPress={handlePressDetails} />
-            <FlatList
+          {recipes.length > 0 && <FlatList
         data={recipes}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
         numColumns={2}
         contentContainerStyle={styles.ListContent}
-      />
+      />}
+      {recipes.length === 0 && 
+      <View style={{height: '85%', justifyContent: 'center', alignItems: 'center'}}>
+        <Book></Book>
+        <Text>Your recipe book is empty...</Text>
+        <Text>Add food to your pantry first to get recipe suggestions!</Text>
+      </View>
+      }
         </SafeAreaView>
     )
 };
