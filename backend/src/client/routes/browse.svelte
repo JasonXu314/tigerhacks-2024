@@ -39,7 +39,7 @@
 
 <header>
 	<div class="container">
-		<h1>Search for Food</h1>
+		<h1>Community Food</h1>
 	</div>
 </header>
 <main class="container">
@@ -59,7 +59,8 @@
 		</div>
 	{/each}
 </main>
-<table>
+
+<!-- <table>
 	<thead>
 		<tr>
 			<th scope="col">Name</th>
@@ -86,7 +87,7 @@
 			</tr>
 		{/each}
 	</tbody>
-</table>
+</table> -->
 
 <style>
 	:root {
