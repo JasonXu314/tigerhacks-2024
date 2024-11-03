@@ -35,7 +35,6 @@ const MapScreen: React.FC = () => {
       title: 'Progressive Missionary Baptist Church - Food Distribution Center',
       description: '702 Banks Ave, Columbia, MO 65203'
     }
-    // Add more markers as needed
   ];
 
   const openMapDirections = (latitude: number, longitude: number) => {
@@ -48,14 +47,14 @@ const MapScreen: React.FC = () => {
       android: `${scheme}${latLng}(${label})`
     });
 
-    Linking.openURL(url!);   
+    Linking.openURL(url!);
 
   };
 
   return (
     <View style={styles.container}>
       <MapView
-        style={styles.map}   
+        style={styles.map}
 
         initialRegion={{
           latitude: 38.94,
