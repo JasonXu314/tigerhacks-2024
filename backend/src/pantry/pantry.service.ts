@@ -8,7 +8,7 @@ import { DBService } from 'src/db/db.service';
 import { FoodsService } from 'src/foods/foods.service';
 import { publicAttrs } from 'src/users/users.models';
 import { AddFoodsDTO } from './pantry.dtos';
-import { FullRecipe, Instruction, OCRLine, Recipe } from './pantry.models';
+import { FullRecipe, Instruction, OCRLine, Recipe, UserFoodItem } from './pantry.models';
 
 @Injectable()
 export class PantryService {
@@ -46,8 +46,8 @@ export class PantryService {
 		}
 	}
 
-	public async getFoods(user: User): Promise<FoodItem[]> {
-		return this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } });
+	public async getFoods(user: User): Promise<UserFoodItem[]> {
+		return this._joinOffers(this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } }), user);
 	}
 
 	public async addFoods(dto: AddFoodsDTO, user: User): Promise<FoodItem[]> {
@@ -133,7 +133,8 @@ export class PantryService {
 			include: {
 				foodItem: true,
 				owner: publicAttrs
-			}
+			},
+			orderBy: { foodItem: { expDate: 'asc' } }
 		});
 	}
 
@@ -168,6 +169,18 @@ export class PantryService {
 		} else {
 			return null;
 		}
+	}
+
+	private _joinOffers(query: Promise<FoodItem[]>, user: User): Promise<UserFoodItem[]> {
+		return query.then((items) =>
+			Promise.all(
+				items.map<Promise<UserFoodItem>>((item) =>
+					this.db.foodOffer
+						.findUnique({ where: { userId_foodId: { userId: user.id, foodId: item.id } } })
+						.then((offer) => (offer === null ? { ...item, public: false } : { ...item, public: true }))
+				)
+			)
+		);
 	}
 }
 

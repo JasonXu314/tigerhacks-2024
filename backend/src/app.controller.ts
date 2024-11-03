@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FoodItem, FoodOffer, User as UserT } from '@prisma/client';
+import { FoodItem, FoodOffer, type User as UserT } from '@prisma/client';
 import axios from 'axios';
 import { Protected } from './auth/protected.decorator';
 import { AddFoodsDTO, OfferFoodDTO } from './pantry/pantry.dtos';
-import { FullRecipe, Instruction, Recipe } from './pantry/pantry.models';
+import { FullRecipe, Instruction, Recipe, UserFoodItem } from './pantry/pantry.models';
 import { PantryService } from './pantry/pantry.service';
 import { AlertContactsDTO } from './users/users.dtos';
 import { UsersService } from './users/users.service';
@@ -39,7 +39,7 @@ export class AppController {
 
 	@Protected()
 	@Get('/pantry')
-	public async getPantry(@User() user: UserT): Promise<FoodItem[]> {
+	public async getPantry(@User() user: UserT): Promise<UserFoodItem[]> {
 		return this.service.getFoods(user);
 	}
 

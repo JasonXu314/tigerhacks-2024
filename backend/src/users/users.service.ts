@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { init } from '@paralleldrive/cuid2';
-import { User } from '@prisma/client';
+import { type User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { randomBytes } from 'crypto';
-import * as notifApi from 'notificationapi-node-server-sdk';
+import notifApi from 'notificationapi-node-server-sdk';
 import { AuthDataSource } from 'src/auth/auth.module';
 import { DBService } from 'src/db/db.service';
 import { AlertContactsDTO, SignupDTO } from './users.dtos';

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { User as UserT } from '@prisma/client';
+import { type User as UserT } from '@prisma/client';
 import { Protected } from 'src/auth/protected.decorator';
 import { Page } from 'src/utils/decorators/page.decorator';
 import { User } from 'src/utils/decorators/user.decorator';

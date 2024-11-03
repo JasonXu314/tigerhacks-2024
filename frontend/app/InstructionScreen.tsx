@@ -5,21 +5,21 @@ import BackArrow  from '@/components/BackArrow';
 import * as SecureStore from 'expo-secure-store';
 import api from '@/services/AxiosConfig';
 import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
 
 const InstructionScreen = () => {
-
-    const [recipeDetails, setRecipeDetails] = useState("")
-    
+    const [recipeInstructions, setRecipeInstructions] = useState([])
+    const [ingredients, setIngredients] = useState([])
+    const [init, setInit] = useState(true);
 
     const {data} = useLocalSearchParams();
-    // console.log(data);
-
     let dataString = Array.isArray(data) ? data.join("") : data;
-    // console.log(dataString.split(","))
     let temp = dataString.split(",")
-    // console.log(temp)
+   
+    useEffect(() => {
+        requestRecipeDetails();
+      }, []);
 
-    let ingredients: any[] = [];
     const requestRecipeDetails = async () => {
         try {
             const token = await SecureStore.getItem('token');
@@ -27,24 +27,21 @@ const InstructionScreen = () => {
                 params: {
                     token: token,
                     id: temp[0]
-            }
-        });
-        // console.log(response.data);
-        
-        ingredients = response.data.extendedIngredients
-        // console.log(response.data.analyzedInstructions[0].steps[0].ingredients)
-        console.log(ingredients[0].original)
-        // setRecipeDetails(response.data)
-        
+                }
+            });
+            setRecipeInstructions(response.data.analyzedInstructions[0].steps);
+            setIngredients(response.data.extendedIngredients);
+            console.log(recipeInstructions);
+            setInit(false);
         } catch (error: any) {
             console.error('Error fetching recipes:', error.response.data)
         }
     };
-    
-    useEffect(() => { // Use useEffect to call handlePressDetails only once
-        requestRecipeDetails();
-      }, []);
 
+    if (init) {
+        return <Loader/>
+    }
+    
     return (
         <SafeAreaView>
             <TouchableOpacity style={styles.backButton} onPress={() => router.navigate({pathname: '/RecipesScreen'})}>
@@ -57,13 +54,15 @@ const InstructionScreen = () => {
                 <Text style={styles.recipeTitle}>{temp[1]}</Text>
                 <Image source={{ uri: temp[2]}} style={styles.recipeImage} />
                 <Text style={styles.recipeHeader}>Ingredients</Text>
-                {ingredients.map((ingredient) => ( // Map through the ingredients array
-          <Text key={ingredient.id} style={styles.recipeText}>
-            {ingredient.original}
-          </Text>
-          ))}
+                {/* Ingredients go here */}
+                {ingredients.map((ingredient: any, i) => (
+                    <Text style={styles.recipeText} key={i}>{"\u2022"} {ingredient.original}</Text>
+                ))}
+                
                 <Text style={styles.recipeHeader}>Directions</Text>
-                <Text style={styles.recipeText}>blah blah</Text>
+                {recipeInstructions.map((recipeInstruction: any, i) => (
+                    <Text style={styles.recipeText} key={i}>{"\u2022"} {recipeInstruction.step}</Text>
+                ))}
             </View>
         </SafeAreaView>
     );
