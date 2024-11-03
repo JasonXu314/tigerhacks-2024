@@ -51,20 +51,22 @@ const CorrectionScreen = () => {
 									: remaining > 24 * 60 * 60 * 1000
 									? [Math.floor(remaining / (24 * 60 * 60 * 1000)), 'days']
 									: [Math.floor(remaining / 1000), 'seconds'];
-							Notifications.scheduleNotificationAsync({
-								content: {
-									title: 'Food expiring!',
-									body: `Your ${name} are expiring in ${timeLeft} ${units}!`,
-									data: { id: id.toString() },
-								},
-								trigger: { date: new Date(boughtDate).getTime() + remaining },
-							});
+							if (new Date(boughtDate).getTime() + remaining - Date.now() > 0) {
+								Notifications.scheduleNotificationAsync({
+									content: {
+										title: 'Food expiring!',
+										body: `Your ${name} are expiring in ${timeLeft} ${units}!`,
+										data: { id: id.toString() },
+									},
+									trigger: { date: new Date(boughtDate).getTime() + remaining },
+								});
+							}
 						}
 					});
 				});
 			})
 			.catch((err) => {
-				console.log(err);
+				console.log(err.response.data);
 			});
 		router.back();
 	};
@@ -108,14 +110,16 @@ const CorrectionScreen = () => {
 									)}
 								</View>
 							))}
-							{editing && <TouchableOpacity
-								style={styles.editButton}
-								onPress={() =>
-									setFoodData([...foodData, { id: foodData.length - 1 === -1 ? 0 : foodData[foodData.length - 1].id + 1, text: '' }])
-								}
-							>
-								<Text style={{ color: 'white', fontSize: 16 }}>Add row</Text>
-							</TouchableOpacity>}
+							{editing && (
+								<TouchableOpacity
+									style={styles.editButton}
+									onPress={() =>
+										setFoodData([...foodData, { id: foodData.length - 1 === -1 ? 0 : foodData[foodData.length - 1].id + 1, text: '' }])
+									}
+								>
+									<Text style={{ color: 'white', fontSize: 16 }}>Add row</Text>
+								</TouchableOpacity>
+							)}
 						</ScrollView>
 						<View style={styles.row}>
 							{!editing && (
@@ -165,7 +169,7 @@ const styles = StyleSheet.create({
 	title: {
 		color: '#6DC47E',
 		fontSize: 26,
-		fontFamily: "JostRegular",
+		fontFamily: 'JostRegular',
 	},
 	row: {
 		display: 'flex',
@@ -202,7 +206,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 1,
 		flex: 1,
-		fontFamily: "JostRegular"
+		fontFamily: 'JostRegular',
 	},
 });
 
