@@ -31,6 +31,7 @@ export class PantryService {
 
 		try {
 			const lines = JSON.parse(out) as OCRLine[];
+			console.log(lines);
 
 			rmSync(tmpFile);
 			rmSync(outFile);
@@ -91,7 +92,7 @@ export class PantryService {
 			data: foods
 		});
 
-		return this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } });
+		return this._joinOffers(this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } }), user);
 	}
 
 	public async removeFood(id: number, user: User): Promise<void> {
