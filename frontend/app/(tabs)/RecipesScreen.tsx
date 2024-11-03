@@ -29,21 +29,6 @@ const RecipesScreen = () => {
         }
       };
 
-    const handlePressDetails = async () => {
-        try {
-            const token = await SecureStore.getItem('token');
-            const response = await api.get('/recipe-details', {
-                params: {
-                    token: token,
-                    id: 652929
-            }
-        });
-        // console.log(response.data);
-        } catch (error: any) {
-            console.error('Error fetching recipes:', error.response.data)
-        }
-    };
-
       const renderItem = ({ item } : {item: any}) => (
         <View style={styles.recipeItem}>
           <TouchableOpacity onPress={() => router.navigate({pathname: '/InstructionScreen', params: {data: [ item.id, item.title, item.image]}})}> 
@@ -56,8 +41,6 @@ const RecipesScreen = () => {
 
 	return (
         <SafeAreaView>
-            <Button title="test api" onPress={handlePress} />
-            <Button title='test /recipe-details' onPress={handlePressDetails} />
           {recipes.length > 0 && <FlatList
         data={recipes}
         renderItem={renderItem}
