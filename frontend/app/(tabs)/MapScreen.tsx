@@ -33,7 +33,7 @@ const MapScreen: React.FC = () => {
       latitude: 38.9605627,
       longitude: -92.3441821,
       title: 'Progressive Missionary Baptist Church - Food Distribution Center',
-      description: ''
+      description: '702 Banks Ave, Columbia, MO 65203'
     }
     // Add more markers as needed
   ];
@@ -75,7 +75,16 @@ const MapScreen: React.FC = () => {
 
             description={marker.description}   
 
-            onCalloutPress={() => openMapDirections(marker.latitude, marker.longitude)} // Add onCalloutPress
+            onCalloutPress={() => {
+              // For iOS, open Apple Maps directly with coordinates
+              if (Platform.OS === 'ios') {
+                const url = `maps://app?daddr=${marker.latitude},${marker.longitude}`;
+                Linking.openURL(url);
+              } else {
+                // For Android, use the existing openMapDirections function
+                openMapDirections(marker.latitude, marker.longitude);
+              }
+            }}
           />
         ))}
       </MapView>
