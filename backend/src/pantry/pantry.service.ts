@@ -91,7 +91,7 @@ export class PantryService {
 			data: foods
 		});
 
-		return this.db.foodItem.findMany({ where: { userId: user.id } });
+		return this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } });
 	}
 
 	public async removeFood(id: number, user: User): Promise<void> {
