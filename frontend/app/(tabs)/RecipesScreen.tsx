@@ -34,7 +34,7 @@ const RecipesScreen = () => {
                     id: 652929
             }
         });
-        console.log(response.data);
+        // console.log(response.data);
         } catch (error: any) {
             console.error('Error fetching recipes:', error.response.data)
         }

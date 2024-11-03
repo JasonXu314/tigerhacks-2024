@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Loader from "@/components/Loader";
 
 const InstructionScreen = () => {
-    const [recipeInstructions, setRecipeInstructions] = useState("")
+    const [recipeInstructions, setRecipeInstructions] = useState([])
     const [ingredients, setIngredients] = useState([])
     const [init, setInit] = useState(true);
 
@@ -29,8 +29,9 @@ const InstructionScreen = () => {
                     id: temp[0]
                 }
             });
-            
-            setIngredients(response.data.extendedIngredients)
+            setRecipeInstructions(response.data.analyzedInstructions[0].steps);
+            setIngredients(response.data.extendedIngredients);
+            console.log(recipeInstructions);
             setInit(false);
         } catch (error: any) {
             console.error('Error fetching recipes:', error.response.data)
@@ -40,7 +41,7 @@ const InstructionScreen = () => {
     if (init) {
         return <Loader/>
     }
-
+    
     return (
         <SafeAreaView>
             <TouchableOpacity style={styles.backButton} onPress={() => router.navigate({pathname: '/RecipesScreen'})}>
@@ -55,13 +56,13 @@ const InstructionScreen = () => {
                 <Text style={styles.recipeHeader}>Ingredients</Text>
                 {/* Ingredients go here */}
                 {ingredients.map((ingredient: any, i) => (
-                    <Text key={i}>{ingredient.original}</Text>
-                ))
-
-                }
+                    <Text style={styles.recipeText} key={i}>{"\u2022"} {ingredient.original}</Text>
+                ))}
                 
                 <Text style={styles.recipeHeader}>Directions</Text>
-                <Text style={styles.recipeText}>blah blah</Text>
+                {recipeInstructions.map((recipeInstruction: any, i) => (
+                    <Text style={styles.recipeText} key={i}>{"\u2022"} {recipeInstruction.step}</Text>
+                ))}
             </View>
         </SafeAreaView>
     );

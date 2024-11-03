@@ -5,7 +5,7 @@ import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl, SafeAreaView, Image } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { SearchBar } from '@rneui/themed';
@@ -14,15 +14,15 @@ const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
 	const [refreshing, setRefreshing] = useState(false);
 	const [tempFoodItems, setTempFoodItems] = useState<FoodItem[]>([]);
-    const [searchValue, setSearchValue] = useState('')
+	const [searchValue, setSearchValue] = useState('');
 	const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const openRowRef = useRef<any>(null);
 
-    useEffect(() => {
-        setTempFoodItems(foodItems);
-    }, [])
+	useEffect(() => {
+		setTempFoodItems(foodItems);
+	}, []);
 
 	const closeRow = (rowMap: any, rowKey: any) => {
 		if (rowMap[rowKey]) {
@@ -53,7 +53,7 @@ const HomeScreen = () => {
 		api.delete(`/food-item/${id}?token=${SecureStorage.getItem('token')}`)
 			.then((resp) => {
 				updateFoodItems([...foodItems.filter((item) => item.id != id)]);
-                setTempFoodItems([...tempFoodItems.filter((item) => item.id != id)])
+				setTempFoodItems([...tempFoodItems.filter((item) => item.id != id)]);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -129,7 +129,7 @@ const HomeScreen = () => {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-        setTempFoodItems(foodItems);
+		setTempFoodItems(foodItems);
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 2000);
@@ -151,9 +151,9 @@ const HomeScreen = () => {
 				}}
 				value={searchValue}
 			/>
-			<SwipeListView
+			{tempFoodItems.length > 0 && <SwipeListView
 				data={tempFoodItems}
-                contentContainerStyle={{paddingBottom: 150}}
+				contentContainerStyle={{ paddingBottom: 150 }}
 				renderItem={renderItem}
 				renderHiddenItem={renderHiddenItem}
 				rightOpenValue={-225}
@@ -165,13 +165,21 @@ const HomeScreen = () => {
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
 				onSwipeValueChange={onSwipeValueChange}
 				keyExtractor={(item) => item.id}
-			/>
+			/>}
+			{tempFoodItems.length === 0 && <View style={{ justifyContent: 'center', alignItems: 'center', height: '85%', gap: 15
+             }}>
+				<Image source={require('../../assets/bg/pantry.png')} style={{ marginBottom: 30, marginTop: -30, width: 120, height: 165 }}></Image>
+				<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>It's empty here...</Text>
+				<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>
+					Add groceries to your pantry by scanning your receipts!
+				</Text>
+			</View>}
 		</SafeAreaView>
-	);  
+	);
 };
 
 const styles = StyleSheet.create({
-    search: {
+	search: {
 		backgroundColor: 'white',
 		borderBottomWidth: 0,
 		borderTopWidth: 0,
