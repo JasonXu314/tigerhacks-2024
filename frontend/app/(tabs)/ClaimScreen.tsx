@@ -82,7 +82,7 @@ export default function ClaimScreen() {
 				<View style={{ marginLeft: 'auto' }}>
 					<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
 					<Text style={styles.days}>
-						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} {Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) === 1 ? "day" : "days"} left
 					</Text>
 				</View>
 			</View>
