@@ -22,7 +22,7 @@ const HomeScreen = () => {
 
     useEffect(() => {
         setTempFoodItems(foodItems);
-    })
+    }, [])
 
 	const closeRow = (rowMap: any, rowKey: any) => {
 		if (rowMap[rowKey]) {
