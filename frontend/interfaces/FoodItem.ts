@@ -5,4 +5,5 @@ export interface FoodItem {
 	name: string;
 	image: string;
 	userId: string;
+    public: boolean;
 }
