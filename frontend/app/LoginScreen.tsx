@@ -136,7 +136,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 					<>
 						<View style={{ height: '70%', justifyContent: 'flex-end', gap: 25, paddingBottom: 30 }}>
 							<Text style={styles.titleText}>Welcome to PantryPal</Text>
-							<Text style={styles.description}>We just need a bit more information before you can start reducing food waste</Text>
+							<Text style={styles.description}>Let's personalize your pantry! Start by entering your name and number.</Text>
 							<View>
 								<Text style={styles.headerText}>First Name</Text>
 								<TextInput style={styles.input} onChangeText={setFirstName} placeholder="Enter your first name" autoCorrect={false} />
@@ -208,7 +208,6 @@ const styles = StyleSheet.create({
 		fontFamily: 'JostRegular',
 	},
 	description: {
-		marginHorizontal: 'auto',
 		fontFamily: 'JostRegular',
 		fontSize: 16,
 	},

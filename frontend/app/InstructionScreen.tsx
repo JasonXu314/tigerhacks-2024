@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
         zIndex: 10
 	},
 	recipeTitle: {
-		fontSize: 30,
+		fontSize: 26,
 		padding: 5,
 		alignSelf: 'center',
 		fontFamily: 'JostSemiBold',

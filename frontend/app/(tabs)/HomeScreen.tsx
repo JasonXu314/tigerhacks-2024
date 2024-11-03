@@ -139,8 +139,16 @@ const HomeScreen = () => {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-		setTempFoodItems(foodItems);
-        console.log(foodItems)
+        const token = SecureStorage.getItem('token');
+        if (token) {
+            api.get(`/pantry?token=${token}`)
+                .then((resp) => {
+                    setTempFoodItems(resp.data);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
 
 		setTimeout(() => {
 			setRefreshing(false);

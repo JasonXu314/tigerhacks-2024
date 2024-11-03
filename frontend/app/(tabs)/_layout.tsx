@@ -153,7 +153,7 @@ const Navbar = () => {
 				name="ClaimScreen"
 				options={{
 					tabBarIcon: ({ focused }) => (focused ? <SearchColored style={{ marginBottom: -25 }} /> : <Search style={{ marginBottom: -25 }} />),
-					title: 'Search for Food',
+					title: 'Community Food',
 				}}
 			/>
 		</Tabs>
