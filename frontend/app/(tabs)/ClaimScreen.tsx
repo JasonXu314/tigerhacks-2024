@@ -1,17 +1,13 @@
-import React, { useContext, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, RefreshControl } from 'react-native';
-import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
-import { FoodContext } from '@/contexts/FoodContext';
-import Icon from 'react-native-vector-icons/Ionicons';
-import api from '@/services/AxiosConfig';
-import { createContext, ReactNode, useEffect } from 'react';
-import * as SecureStorage from 'expo-secure-store';
-import { FoodItem } from '@/interfaces/FoodItem';
-import * as Location from 'expo-location';
-import { router } from 'expo-router';
-import { SearchBar } from '@rneui/themed';
 import Trash from '@/components/bg/Trash';
-import Loader from "@/components/Loader";
+import Loader from '@/components/Loader';
+import { FoodItem } from '@/interfaces/FoodItem';
+import api from '@/services/AxiosConfig';
+import { SearchBar } from '@rneui/themed';
+import * as Location from 'expo-location';
+import * as SecureStorage from 'expo-secure-store';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, RefreshControl, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<any>([]);
@@ -66,10 +62,9 @@ export default function ClaimScreen() {
 						backgroundColor:
 							Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3
 								? '#FFDFDF'
-								: 'white',
-					},
-				]}
-			>
+								: 'white'
+					}
+				]}>
 				<Text style={styles.icon}>{item.foodItem.image}</Text>
 				<View>
 					<Text style={styles.title} numberOfLines={1}>
@@ -82,7 +77,8 @@ export default function ClaimScreen() {
 				<View style={{ marginLeft: 'auto' }}>
 					<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
 					<Text style={styles.days}>
-						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} {Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) === 1 ? "day" : "days"} left
+						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))}{' '}
+						{Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) === 1 ? 'day' : 'days'} left
 					</Text>
 				</View>
 			</View>
@@ -98,8 +94,8 @@ export default function ClaimScreen() {
 	}, []);
 
 	if (init) {
-        return <Loader/>
-    }
+		return <Loader />;
+	}
 
 	return (
 		<SafeAreaView>
@@ -129,9 +125,9 @@ export default function ClaimScreen() {
 			)}
 			{tempFoodData.length === 0 && (
 				<View style={{ justifyContent: 'center', alignItems: 'center', height: '85%', gap: 15 }}>
-					<Trash style={{marginTop: -30, marginBottom: 30}}></Trash>
-                    <Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>There is no food up for grabs right now...</Text>
-                    <Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>Come back later!</Text>
+					<Trash style={{ marginTop: -30, marginBottom: 30 }}></Trash>
+					<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>There is no food up for grabs right now...</Text>
+					<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>Come back later!</Text>
 				</View>
 			)}
 		</SafeAreaView>
@@ -143,12 +139,12 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		flex: 1,
 		flexDirection: 'row',
-		justifyContent: 'flex-end',
+		justifyContent: 'flex-end'
 	},
 	search: {
 		backgroundColor: 'white',
 		borderBottomWidth: 0,
-		borderTopWidth: 0,
+		borderTopWidth: 0
 	},
 	box: {
 		width: 75,
@@ -156,12 +152,12 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		height: '100%',
+		height: '100%'
 	},
 	boxText: {
 		color: 'white',
 		fontSize: 12,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	rowFront: {
 		backgroundColor: 'white',
@@ -170,30 +166,31 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#EDECEC',
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 10,
+		gap: 10
 	},
 	icon: {
-		fontSize: 32,
+		fontSize: 32
 	},
 	title: {
 		fontSize: 19,
 		fontFamily: 'JostRegular',
-		maxWidth: 190,
+		maxWidth: 190
 	},
 	exp: {
 		fontSize: 14,
 		fontFamily: 'JostRegular',
-		color: '#606C38',
+		color: '#606C38'
 	},
 	number: {
 		fontSize: 18,
 		fontFamily: 'JostRegular',
-		color: 'black',
+		color: 'black'
 	},
 	days: {
 		fontSize: 15,
 		fontFamily: 'JostRegular',
 		color: '#606C38',
-		textAlign: 'right',
-	},
+		textAlign: 'right'
+	}
 });
+

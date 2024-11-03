@@ -1,9 +1,8 @@
-import { useFonts } from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import React, { useState } from 'react';
-import { Stack } from 'expo-router';
 import { FoodProvider } from '@/contexts/FoodContext';
+import { useFonts } from 'expo-font';
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect } from 'react';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -12,7 +11,7 @@ export default function RootLayout() {
 	const [loaded] = useFonts({
 		JostRegular: require('../assets/fonts/Jost-Regular.ttf'),
 		JostBold: require('../assets/fonts/Jost-Bold.ttf'),
-		JostSemiBold: require('../assets/fonts/Jost-SemiBold.ttf'),
+		JostSemiBold: require('../assets/fonts/Jost-SemiBold.ttf')
 	});
 
 	useEffect(() => {
@@ -39,3 +38,4 @@ export default function RootLayout() {
 		</FoodProvider>
 	);
 }
+

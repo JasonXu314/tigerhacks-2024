@@ -1,14 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TextInput, Button, Alert, TouchableOpacity, Pressable } from 'react-native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import api from '@/services/AxiosConfig';
-import * as SecureStore from 'expo-secure-store';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useRouter } from 'expo-router';
 import Bottom from '@/components/bg/Bottom';
-import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import api from '@/services/AxiosConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { CodeField, Cursor, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
 	setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -21,7 +20,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 	const ref = useBlurOnFulfill({ value, cellCount: 6 });
 	const [props, getCellOnLayoutHandler] = useClearByFocusCell({
 		value,
-		setValue,
+		setValue
 	});
 	const [token, setToken] = useState('');
 
@@ -36,7 +35,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 				const response = await api.post('/users/signup', {
 					phone: phoneNumber,
 					firstName: firstName,
-					lastName: lastName,
+					lastName: lastName
 				});
 				setToken(response.data['token']);
 
@@ -68,15 +67,15 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 		}
 	};
 
-    const resendCode = () => {
-        api.post(`/users/resend?token=${token}`)
-        .then((resp) => {
-            console.log(resp.data)
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-    }
+	const resendCode = () => {
+		api.post(`/users/resend?token=${token}`)
+			.then((resp) => {
+				console.log(resp.data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	};
 
 	return (
 		<SafeAreaView style={styles.container}>
@@ -99,16 +98,13 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 						<View style={{ height: '70%', justifyContent: 'flex-end', gap: 30, paddingBottom: 30 }}>
 							<Text style={[styles.titleText, { textAlign: 'left', marginBottom: -15 }]}>Enter code</Text>
 							<Text style={styles.description}>We've sent a six digit code to {phoneNumber}. Please enter it to confirm your number.</Text>
-                            <View style={{alignItems: 'center', flexDirection: 'row'}}>
-                            <Text style={styles.didntReceive}>
-								Didn't receive a text?{' '}
-							
-							</Text>
-                            <TouchableOpacity onPress={() => resendCode()}>
+							<View style={{ alignItems: 'center', flexDirection: 'row' }}>
+								<Text style={styles.didntReceive}>Didn't receive a text? </Text>
+								<TouchableOpacity onPress={() => resendCode()}>
 									<Text style={{ color: '#6DC47E', textDecorationLine: 'underline' }}>Resend code</Text>
 								</TouchableOpacity>
-                            </View>
-							
+							</View>
+
 							<CodeField
 								ref={ref}
 								{...props}
@@ -176,12 +172,12 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: 'center',
-		backgroundColor: '#F3F5FC',
+		backgroundColor: '#F3F5FC'
 	},
 	header: {
 		width: '100%',
 		paddingLeft: 30,
-		paddingTop: 10,
+		paddingTop: 10
 	},
 	input: {
 		height: 40,
@@ -192,26 +188,26 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.25,
 		shadowRadius: 2,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	headerText: {
 		color: '#6DC47E',
 		fontSize: 20,
 		marginBottom: 10,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	titleText: {
 		color: '#6DC47E',
 		fontSize: 34,
 		textAlign: 'center',
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	description: {
 		fontFamily: 'JostRegular',
-		fontSize: 16,
+		fontSize: 16
 	},
 	didntReceive: {
-		fontSize: 13,
+		fontSize: 13
 	},
 	button: {
 		backgroundColor: '#6DC47E',
@@ -221,21 +217,21 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 15,
-		paddingHorizontal: 40,
+		paddingHorizontal: 40
 	},
 	buttonText: {
 		color: 'white',
 		fontSize: 15,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	root: {
 		flex: 1,
-		padding: 20,
+		padding: 20
 	},
 	title: {
 		textAlign: 'center',
 		fontSize: 30,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	codeFieldRoot: {},
 	cell: {
@@ -249,11 +245,12 @@ const styles = StyleSheet.create({
 		shadowColor: '#000000',
 		shadowOffset: { width: 0, height: 2 },
 		shadowOpacity: 0.25,
-		shadowRadius: 2,
+		shadowRadius: 2
 	},
 	focusCell: {
-		borderColor: '#000',
-	},
+		borderColor: '#000'
+	}
 });
 
 export default LoginScreen;
+

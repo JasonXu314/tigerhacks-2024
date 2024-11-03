@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { View, SafeAreaView, Text, Button, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { router, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import api from '@/services/AxiosConfig';
-import * as SecureStore from 'expo-secure-store';
 import Book from '@/components/bg/Book';
-import { SearchBar } from '@rneui/themed';
 import Loader from '@/components/Loader';
+import api from '@/services/AxiosConfig';
+import { SearchBar } from '@rneui/themed';
+import { router } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const RecipesScreen = () => {
 	const [recipes, setRecipes] = useState([]);
 	const [tempRecipes, setTempRecipes] = useState([]);
 	const [searchValue, setSearchValue] = useState('');
-    const [init, setInit] = useState(true);
+	const [init, setInit] = useState(true);
 
 	useEffect(() => {
 		handlePress();
@@ -22,12 +22,12 @@ const RecipesScreen = () => {
 			const token = await SecureStore.getItem('token'); // Get the token first
 			const response = await api.get('/recipes', {
 				params: {
-					token: token,
-				},
+					token: token
+				}
 			});
 			setRecipes(response.data);
 			setTempRecipes(response.data);
-            setInit(false);
+			setInit(false);
 		} catch (error: any) {
 			console.error('Error fetching recipes:', error.response.data);
 		}
@@ -36,14 +36,15 @@ const RecipesScreen = () => {
 	const renderItem = ({ item }: { item: any }) => (
 		<TouchableOpacity
 			onPress={() => router.navigate({ pathname: '/InstructionScreen', params: { data: [item.id, item.title, item.image] } })}
-			style={styles.recipeItem}
-		>
+			style={styles.recipeItem}>
 			<Image source={{ uri: item.image }} style={styles.recipeImage} />
-			<Text style={styles.recipeTitle} numberOfLines={2}>{item.title}</Text>
+			<Text style={styles.recipeTitle} numberOfLines={2}>
+				{item.title}
+			</Text>
 		</TouchableOpacity>
 	);
 
-    if (init) return <Loader/>
+	if (init) return <Loader />;
 
 	return (
 		<SafeAreaView>
@@ -61,14 +62,7 @@ const RecipesScreen = () => {
 				}}
 				value={searchValue}
 			/>
-			{recipes.length > 0 && (
-				<FlatList
-					data={tempRecipes}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.id.toString()}
-					numColumns={2}
-				/>
-			)}
+			{recipes.length > 0 && <FlatList data={tempRecipes} renderItem={renderItem} keyExtractor={(item) => item.id.toString()} numColumns={2} />}
 			{recipes.length === 0 && (
 				<View style={{ height: '85%', justifyContent: 'center', alignItems: 'center', gap: 15 }}>
 					<Book style={{ marginTop: -30, marginBottom: 30 }}></Book>
@@ -83,7 +77,7 @@ const styles = StyleSheet.create({
 	search: {
 		backgroundColor: 'white',
 		borderBottomWidth: 0,
-		borderTopWidth: 0,
+		borderTopWidth: 0
 	},
 	recipeItem: {
 		alignItems: 'center',
@@ -92,17 +86,17 @@ const styles = StyleSheet.create({
 		borderColor: '#ccc',
 		borderRadius: 5,
 		overflow: 'hidden',
-        maxWidth: '50%',
-        flex: 1
+		maxWidth: '50%',
+		flex: 1
 	},
 	recipeImage: {
 		width: 200,
-		height: 150,
+		height: 150
 	},
 	recipeTitle: {
 		textAlign: 'center',
-		padding: 10,
-	},
+		padding: 10
+	}
 });
 
 export default RecipesScreen;

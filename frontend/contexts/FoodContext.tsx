@@ -1,7 +1,7 @@
-import api from '@/services/AxiosConfig';
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
+import api from '@/services/AxiosConfig';
+import * as SecureStorage from 'expo-secure-store';
+import React, { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface FoodContextType {
 	foodItems: FoodItem[];
@@ -10,29 +10,30 @@ interface FoodContextType {
 
 export const FoodContext = createContext<FoodContextType>({
 	foodItems: [],
-	updateFoodItems: () => {},
+	updateFoodItems: () => {}
 });
 
 export const FoodProvider = ({ children }: { children: ReactNode }) => {
-    const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
-    
+	const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+
 	const updateFoodItems = (items: FoodItem[]) => {
-        setFoodItems(items);
+		setFoodItems(items);
 	};
 
-    useEffect(() => {
-        const token = SecureStorage.getItem('token');
-        if (token) {
-            api.get(`/pantry?token=${token}`)
-                .then((resp) => {
-                    console.log(resp.data)
-                    setFoodItems(resp.data);
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }
-    }, []);
+	useEffect(() => {
+		const token = SecureStorage.getItem('token');
+		if (token) {
+			api.get(`/pantry?token=${token}`)
+				.then((resp) => {
+					console.log(resp.data);
+					setFoodItems(resp.data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		}
+	}, []);
 
 	return <FoodContext.Provider value={{ foodItems, updateFoodItems }}>{children}</FoodContext.Provider>;
 };
+

@@ -1,13 +1,11 @@
-import { useLocalSearchParams } from 'expo-router';
-import { SafeAreaView, Text, StyleSheet, Image, Button, TouchableOpacity, View, ScrollView } from 'react-native';
-import { router } from 'expo-router';
-import BackArrow from '@/components/BackArrow';
-import * as SecureStore from 'expo-secure-store';
-import api from '@/services/AxiosConfig';
-import { useEffect, useState } from 'react';
 import Loader from '@/components/Loader';
 import Banner from '@/components/bg/Banner';
+import api from '@/services/AxiosConfig';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { router, useLocalSearchParams } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
+import { useEffect, useState } from 'react';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const InstructionScreen = () => {
 	const [recipeInstructions, setRecipeInstructions] = useState([]);
@@ -28,8 +26,8 @@ const InstructionScreen = () => {
 			const response = await api.get('/recipe-details', {
 				params: {
 					token: token,
-					id: temp[0],
-				},
+					id: temp[0]
+				}
 			});
 			setRecipeInstructions(response.data.analyzedInstructions[0].steps);
 			setIngredients(response.data.extendedIngredients);
@@ -53,13 +51,13 @@ const InstructionScreen = () => {
 					color="#fff"
 					style={{ zIndex: 10 }}
 					onPress={() => {
-                        if (router.canGoBack()) {
-                            router.back();
+						if (router.canGoBack()) {
+							router.back();
 						}
 					}}
 				/>
 			</View>
-            <Text style={styles.recipeTitle}>{temp[1]}</Text>
+			<Text style={styles.recipeTitle}>{temp[1]}</Text>
 			<ScrollView>
 				<Image source={{ uri: temp[2] }} style={styles.recipeImage} />
 				<Text style={styles.recipeHeader}>Ingredients</Text>
@@ -82,13 +80,13 @@ const InstructionScreen = () => {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
+		flex: 1
 	},
 	header: {
 		width: '100%',
 		paddingLeft: 25,
 		paddingTop: 10,
-        zIndex: 10
+		zIndex: 10
 	},
 	recipeTitle: {
 		fontSize: 26,
@@ -96,40 +94,41 @@ const styles = StyleSheet.create({
 		alignSelf: 'center',
 		fontFamily: 'JostSemiBold',
 		color: '#fff',
-        zIndex: 10,
-        textAlign: 'center'
+		zIndex: 10,
+		textAlign: 'center'
 	},
 	recipeHeader: {
 		fontSize: 32,
 		color: '#6DC47E',
 		paddingTop: 15,
-        paddingBottom: 10,
-        paddingLeft: 30,
-        fontFamily: 'JostRegular'
+		paddingBottom: 10,
+		paddingLeft: 30,
+		fontFamily: 'JostRegular'
 	},
 	recipeText: {
 		fontSize: 14,
-        fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular',
 		paddingLeft: 50,
 		paddingRight: 20,
-        color: '5E5E5E'
+		color: '5E5E5E'
 	},
 	recipeImage: {
 		width: 500,
 		height: 250,
-		alignSelf: 'center',
+		alignSelf: 'center'
 	},
 	backBtnText: {
-		color: '#439C54',
+		color: '#439C54'
 	},
 	backButton: {
 		paddingLeft: 20,
-		paddingTop: 45,
+		paddingTop: 45
 	},
 	backArrowContainer: {
 		flexDirection: 'row',
-		alignItems: 'center',
-	},
+		alignItems: 'center'
+	}
 });
 
 export default InstructionScreen;
+

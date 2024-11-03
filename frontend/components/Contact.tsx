@@ -1,29 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const Contact = ({ contact, selectedContacts, setSelectedContacts }: { contact: any; selectedContacts: any; setSelectedContacts: any }) => {
 	const [selected, setSelected] = useState(false);
 
-    useEffect(() => {
-        if (contact?.phoneNumbers && selectedContacts.includes(contact.phoneNumbers[0].number)) {
-            setSelected(true);
-        }
-    })
+	useEffect(() => {
+		if (contact?.phoneNumbers && selectedContacts.includes(contact.phoneNumbers[0].number)) {
+			setSelected(true);
+		}
+	});
 
-    const pressHandler = () => {
-        if (!contact?.phoneNumbers) {
-            return;
-        }
-        if (selected) { // remove
-            setSelectedContacts([...selectedContacts.filter((phone: string) => phone != contact.phoneNumbers[0].number)])
-        }
-        else { // add
-            setSelectedContacts([...selectedContacts, contact.phoneNumbers[0].number])
-        }
-        console.log(selectedContacts)
-        setSelected(!selected)
-    }
+	const pressHandler = () => {
+		if (!contact?.phoneNumbers) {
+			return;
+		}
+		if (selected) {
+			// remove
+			setSelectedContacts([...selectedContacts.filter((phone: string) => phone != contact.phoneNumbers[0].number)]);
+		} else {
+			// add
+			setSelectedContacts([...selectedContacts, contact.phoneNumbers[0].number]);
+		}
+		console.log(selectedContacts);
+		setSelected(!selected);
+	};
 
 	return (
 		<TouchableOpacity style={styles.contactCon} onPress={() => pressHandler()}>
@@ -36,7 +37,7 @@ const Contact = ({ contact, selectedContacts, setSelectedContacts }: { contact: 
 				<Text style={styles.name}>{contact?.name}</Text>
 				<Text style={styles.phoneNumber}>{contact?.phoneNumbers ? contact?.phoneNumbers[0]?.number : null}</Text>
 			</View>
-          {selected && <Icon name="checkmark" size={24} color={'#5BB46C'} style={{alignSelf: 'center', marginRight: 10}}/>}
+			{selected && <Icon name="checkmark" size={24} color={'#5BB46C'} style={{ alignSelf: 'center', marginRight: 10 }} />}
 		</TouchableOpacity>
 	);
 };
@@ -48,7 +49,7 @@ const styles = StyleSheet.create({
 		paddingLeft: 25,
 		borderBottomWidth: 0.5,
 		borderBottomColor: '#d9d9d9',
-		gap: 8,
+		gap: 8
 	},
 	imgCon: {},
 	placeholder: {
@@ -58,21 +59,22 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 		backgroundColor: '#d9d9d9',
 		alignItems: 'center',
-		justifyContent: 'center',
+		justifyContent: 'center'
 	},
 	contactDat: {
 		flex: 1,
 		justifyContent: 'center',
-		paddingLeft: 5,
+		paddingLeft: 5
 	},
 	txt: {
-		fontSize: 18,
+		fontSize: 18
 	},
 	name: {
-		fontSize: 16,
+		fontSize: 16
 	},
 	phoneNumber: {
-		color: '#888',
-	},
+		color: '#888'
+	}
 });
 export default Contact;
+

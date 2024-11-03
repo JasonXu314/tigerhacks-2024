@@ -1,14 +1,12 @@
 import Banner from '@/components/bg/Banner';
-import RecipeBanner from '@/components/bg/RecipeBanner';
 import Logo from '@/components/Logo';
 import StaggeredDropAnimation from '@/components/StaggeredDropAnimation';
 import { useRouter } from 'expo-router';
-import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Image } from 'react-native';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const LandingPage = () => {
-    const router = useRouter();
-    
+	const router = useRouter();
+
 	return (
 		<SafeAreaView style={styles.container}>
 			<Banner style={{ position: 'absolute', top: 0, zIndex: 99 }}></Banner>
@@ -16,7 +14,7 @@ const LandingPage = () => {
 				<Logo></Logo>
 			</View>
 			<View style={styles.bottomContainer}>
-            <StaggeredDropAnimation/>
+				<StaggeredDropAnimation />
 				<Text style={styles.description}>Just shop, scan your receipt, then let us do the rest of the tracking for you!</Text>
 				<TouchableOpacity style={styles.button} onPress={() => router.navigate('/LoginScreen')}>
 					<Text style={styles.buttonText}>Get started</Text>
@@ -31,7 +29,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 		backgroundColor: '#F3F5FC',
 		height: '100%',
-		width: '100%',
+		width: '100%'
 	},
 	bottomContainer: {
 		height: '50%',
@@ -40,17 +38,17 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 20,
 		justifyContent: 'flex-end',
 		gap: 10,
-		paddingBottom: 25,
+		paddingBottom: 25
 	},
 	headerText: {
 		color: '#6DC47E',
 		fontSize: 36,
-		fontFamily: 'JostRegular',
+		fontFamily: 'JostRegular'
 	},
 	description: {
 		fontFamily: 'JostRegular',
 		fontSize: 18,
-        textAlign: 'center',
+		textAlign: 'center'
 	},
 	button: {
 		backgroundColor: '#6DC47E',
@@ -60,14 +58,15 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 15,
-        marginTop: 70,
-		width: '100%',
+		marginTop: 70,
+		width: '100%'
 	},
 	buttonText: {
 		fontFamily: 'JostRegular',
 		color: 'white',
-		fontSize: 20,
-	},
+		fontSize: 20
+	}
 });
 
 export default LandingPage;
+
