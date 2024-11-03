@@ -11,12 +11,14 @@ import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { SearchBar } from '@rneui/themed';
 import Trash from '@/components/bg/Trash';
+import Loader from "@/components/Loader";
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<any>([]);
 	const [tempFoodData, setTempFoodData] = useState<any>([]);
 	const [refreshing, setRefreshing] = useState(false);
 	const [searchValue, setSearchValue] = useState('');
+	const [init, setInit] = useState(true);
 
 	const getOffers = async () => {
 		try {
@@ -32,6 +34,7 @@ export default function ClaimScreen() {
 				.then((resp) => {
 					setFoodData(resp.data);
 					setTempFoodData(resp.data);
+					setInit(false);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -93,6 +96,10 @@ export default function ClaimScreen() {
 			setRefreshing(false);
 		}, 2000);
 	}, []);
+
+	if (init) {
+        return <Loader/>
+    }
 
 	return (
 		<SafeAreaView>
