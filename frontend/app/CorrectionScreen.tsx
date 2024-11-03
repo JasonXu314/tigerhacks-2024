@@ -166,6 +166,7 @@ const styles = StyleSheet.create({
 	title: {
 		color: '#6DC47E',
 		fontSize: 26,
+		fontFamily: "JostRegular",
 	},
 	row: {
 		display: 'flex',
@@ -202,6 +203,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 1,
 		flex: 1,
+		fontFamily: "JostRegular"
 	},
 });
 
