@@ -10,6 +10,7 @@ import { FoodItem } from '@/interfaces/FoodItem';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { SearchBar } from '@rneui/themed';
+import Trash from '@/components/bg/Trash';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<any>([]);
@@ -109,14 +110,23 @@ export default function ClaimScreen() {
 				}}
 				value={searchValue}
 			/>
-			<SwipeListView
-				data={tempFoodData}
-				renderItem={renderItem}
-				disableRightSwipe={true}
-				disableLeftSwipe={true}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-				style={{ height: '100%' }}
-			/>
+			{tempFoodData.length > 0 && (
+				<SwipeListView
+					data={tempFoodData}
+					renderItem={renderItem}
+					disableRightSwipe={true}
+					disableLeftSwipe={true}
+					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+					style={{ height: '100%' }}
+				/>
+			)}
+			{tempFoodData.length === 0 && (
+				<View style={{ justifyContent: 'center', alignItems: 'center', height: '85%', gap: 15 }}>
+					<Trash style={{marginTop: -30, marginBottom: 30}}></Trash>
+                    <Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>There is no food up for grabs right now...</Text>
+                    <Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>Come back later!</Text>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 }

@@ -142,7 +142,7 @@ const Trash = (props: SvgProps) => (
         y2={53.947}
         gradientUnits="userSpaceOnUse"
       >
-        <Stop offset={0.556} stopColor="#E8EAF0" />
+
       </LinearGradient>
     </Defs>
   </Svg>
