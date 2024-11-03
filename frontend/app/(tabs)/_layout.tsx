@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Button, StyleSheet, Alert, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, Button, StyleSheet, Alert, Modal, SafeAreaView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import api from '@/services/AxiosConfig';
@@ -13,12 +13,13 @@ import Recipes from '@/components/TabIcons/Recipes';
 import Search from '@/components/TabIcons/Search';
 import PantryColored from '@/components/TabIcons/PantryColored';
 import Pantry from '@/components/TabIcons/Pantry';
+import * as SecureStorage from 'expo-secure-store'
 
 interface Props {
 	children?: any;
 }
 
-function CameraButton({ children }: Props) {
+function CameraButton() {
 	const [image, setImage] = useState<string | null>(null);
 	const [hasPermission, setHasPermission] = useState<boolean>(false);
 
@@ -52,7 +53,7 @@ function CameraButton({ children }: Props) {
 					if (resp.data) {
 						router.navigate({
 							pathname: '/CorrectionScreen',
-							params: { data: JSON.stringify(resp.data)},
+							params: { data: JSON.stringify(resp.data) },
 						});
 					}
 				})
@@ -106,34 +107,33 @@ const Navbar = () => {
 					height: 65,
 					...styles.shadow,
 				},
-                headerStyle: {
-                    backgroundColor: '#6DC47E',
-                    height: 130,
-                  },
-                  headerTintColor: '#fff',
-                  headerTitleStyle: {
-                    fontSize: 28,
-                    paddingLeft: 10
-                  },
-                  headerTitleAlign: 'left'
+				header: (props) => (
+					<SafeAreaView style={{ backgroundColor: '#6DC47E', height: 130, flexDirection: 'row' }}>
+						<Text style={{ fontFamily: 'JostRegular', fontSize: 30, paddingLeft: 10, color: 'white', marginTop: 'auto', marginBottom: 10, marginLeft: 12 }}>{props.options.title}</Text>
+                        <TouchableOpacity style={{marginLeft: 'auto', alignSelf: 'center', marginRight: 20, backgroundColor: '#439C54', padding: 10, borderRadius: 10}} onPress={() => {
+                            SecureStorage.deleteItemAsync('token');
+                            router.navigate('/LandingPage')
+                        }}>
+                            <Text style={{fontFamily: 'JostRegular', color: 'white'}}>
+                                Sign out
+                            </Text>
+                        </TouchableOpacity>
+					</SafeAreaView>
+				),
 			}}
 		>
 			<Tabs.Screen
 				name="HomeScreen"
 				options={{
-					tabBarIcon: ({ focused }) => (
-						focused ? <PantryColored style={{marginBottom: -25}}/> : <Pantry style={{marginBottom: -25}}/>
-					),
-                    title: "My Pantry"
+					tabBarIcon: ({ focused }) => (focused ? <PantryColored style={{ marginBottom: -25 }} /> : <Pantry style={{ marginBottom: -25 }} />),
+					title: 'My Pantry',
 				}}
 			/>
 			<Tabs.Screen
 				name="RecipesScreen"
 				options={{
-					tabBarIcon: ({ focused }) => (
-						focused ? <RecipesColored style={{marginBottom: -25}}/> : <Recipes style={{marginBottom: -25}}/>
-					),
-                    title: "Recipes"
+					tabBarIcon: ({ focused }) => (focused ? <RecipesColored style={{ marginBottom: -25 }} /> : <Recipes style={{ marginBottom: -25 }} />),
+					title: 'Recipes',
 				}}
 			/>
 			<Tabs.Screen
@@ -145,19 +145,15 @@ const Navbar = () => {
 			<Tabs.Screen
 				name="MapScreen"
 				options={{
-					tabBarIcon: ({ focused }) => (
-						focused ? <CharityColored style={{marginBottom: -25}}/> : <Charity style={{marginBottom: -25}}/>
-					),
-                    title: "Donation Centers"
+					tabBarIcon: ({ focused }) => (focused ? <CharityColored style={{ marginBottom: -25 }} /> : <Charity style={{ marginBottom: -25 }} />),
+					title: 'Donation Centers',
 				}}
 			/>
 			<Tabs.Screen
 				name="ClaimScreen"
 				options={{
-					tabBarIcon: ({ focused }) => (
-						focused ? <SearchColored style={{marginBottom: -25}}/> : <Search style={{marginBottom: -25}}/>
-					),
-                    title: "Search for Food"
+					tabBarIcon: ({ focused }) => (focused ? <SearchColored style={{ marginBottom: -25 }} /> : <Search style={{ marginBottom: -25 }} />),
+					title: 'Search for Food',
 				}}
 			/>
 		</Tabs>
