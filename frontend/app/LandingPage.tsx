@@ -11,13 +11,13 @@ const LandingPage = () => {
     
 	return (
 		<SafeAreaView style={styles.container}>
-			<Banner style={{ position: 'absolute', top: 0 }}></Banner>
-			<View style={{ position: 'absolute', top: '20%', alignSelf: 'center' }}>
+			<Banner style={{ position: 'absolute', top: 0, zIndex: 99 }}></Banner>
+			<View style={{ position: 'absolute', top: '20%', alignSelf: 'center', zIndex: 99 }}>
 				<Logo></Logo>
 			</View>
-            <StaggeredDropAnimation/>
 			<View style={styles.bottomContainer}>
-				<Text style={styles.description}>Just shop and scan and let us do the tracking for you!</Text>
+            <StaggeredDropAnimation/>
+				<Text style={styles.description}>Just shop, scan your receipt, then let us do the rest of the tracking for you!</Text>
 				<TouchableOpacity style={styles.button} onPress={() => router.navigate('/LoginScreen')}>
 					<Text style={styles.buttonText}>Get started</Text>
 				</TouchableOpacity>
@@ -39,8 +39,9 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		paddingHorizontal: 20,
 		justifyContent: 'flex-end',
-		gap: 25,
-		paddingBottom: 20,
+		gap: 10,
+		paddingBottom: 25,
+        // marginBottom: 50
 	},
 	headerText: {
 		color: '#6DC47E',
@@ -49,7 +50,8 @@ const styles = StyleSheet.create({
 	},
 	description: {
 		fontFamily: 'JostRegular',
-		fontSize: 16,
+		fontSize: 18,
+        textAlign: 'center',
 	},
 	button: {
 		backgroundColor: '#6DC47E',
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		padding: 15,
+        marginTop: 70,
 		width: '100%',
 	},
 	buttonText: {

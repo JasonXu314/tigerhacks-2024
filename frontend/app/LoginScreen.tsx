@@ -135,7 +135,7 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 				) : (
 					<>
 						<View style={{ height: '70%', justifyContent: 'flex-end', gap: 25, paddingBottom: 30 }}>
-							<Text style={styles.titleText}>Welcome to Pantry</Text>
+							<Text style={styles.titleText}>Welcome to PantryPal</Text>
 							<Text style={styles.description}>We just need a bit more information before you can start reducing food waste</Text>
 							<View>
 								<Text style={styles.headerText}>First Name</Text>
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
 	},
 	titleText: {
 		color: '#6DC47E',
-		fontSize: 36,
+		fontSize: 34,
 		textAlign: 'center',
 		fontFamily: 'JostRegular',
 	},
