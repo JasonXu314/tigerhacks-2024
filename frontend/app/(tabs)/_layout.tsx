@@ -108,11 +108,11 @@ const Navbar = () => {
 				},
                 headerStyle: {
                     backgroundColor: '#6DC47E',
-                    height: 150,
+                    height: 130,
                   },
                   headerTintColor: '#fff',
                   headerTitleStyle: {
-                    fontSize: 36,
+                    fontSize: 28,
                     paddingLeft: 10
                   },
                   headerTitleAlign: 'left'

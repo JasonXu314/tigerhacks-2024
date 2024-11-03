@@ -5,23 +5,26 @@ import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
 import React, { useContext, useRef, useState } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { SearchBar } from '@rneui/themed';
 
 const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
 	const [refreshing, setRefreshing] = useState(false);
+	const [tempFoodItems, setTempFoodItems] = useState<FoodItem[]>([]);
+    const [searchValue, setSearchValue] = useState('')
 	const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const openRowRef = useRef<any>(null);
 
 	const closeRow = (rowMap: any, rowKey: any) => {
-        if (rowMap[rowKey]) {
-            rowMap[rowKey].closeRow();
-        }
-    };
+		if (rowMap[rowKey]) {
+			rowMap[rowKey].closeRow();
+		}
+	};
 
 	const renderItem = ({ item }: { item: any }) => (
 		<View
@@ -46,6 +49,7 @@ const HomeScreen = () => {
 		api.delete(`/food-item/${id}?token=${SecureStorage.getItem('token')}`)
 			.then((resp) => {
 				updateFoodItems([...foodItems.filter((item) => item.id != id)]);
+                setTempFoodItems([...tempFoodItems.filter((item) => item.id != id)])
 			})
 			.catch((err) => {
 				console.log(err);
@@ -98,7 +102,7 @@ const HomeScreen = () => {
 			<TouchableOpacity
 				style={[styles.box, { backgroundColor: '#5BB46C' }]}
 				onPress={() => {
-                    closeRow(rowMap, data.item.id);
+					closeRow(rowMap, data.item.id);
 					router.navigate({ pathname: '/ContactsScreen', params: { id: data.item.id } });
 				}}
 			>
@@ -127,24 +131,46 @@ const HomeScreen = () => {
 	}, []);
 
 	return (
-		<SwipeListView
-			data={foodItems}
-			renderItem={renderItem}
-			renderHiddenItem={renderHiddenItem}
-			rightOpenValue={-225}
-			disableRightSwipe={true}
-			tension={200}
-			friction={10}
-			previewOpenValue={-40}
-			previewOpenDelay={300}
-			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-			onSwipeValueChange={onSwipeValueChange}
-            keyExtractor={(item) => item.id}
-		/>
-	);
+		<SafeAreaView>
+			<SearchBar
+				lightTheme
+				round
+				autoCorrect={false}
+				containerStyle={styles.search}
+				inputContainerStyle={{ backgroundColor: 'white' }}
+				placeholder="Search"
+				inputStyle={{ fontSize: 15, fontFamily: 'JostRegular' }}
+				onChangeText={(val) => {
+					setTempFoodItems([...foodItems.filter((food) => food.name?.startsWith(val))]);
+					setSearchValue(val);
+				}}
+				value={searchValue}
+			/>
+			<SwipeListView
+				data={tempFoodItems}
+				renderItem={renderItem}
+				renderHiddenItem={renderHiddenItem}
+				rightOpenValue={-225}
+				disableRightSwipe={true}
+				tension={200}
+				friction={10}
+				previewOpenValue={-40}
+				previewOpenDelay={300}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+				onSwipeValueChange={onSwipeValueChange}
+				keyExtractor={(item) => item.id}
+			/>
+		</SafeAreaView>
+	);  
 };
 
 const styles = StyleSheet.create({
+    search: {
+		backgroundColor: 'transparent',
+		borderBottomWidth: 0,
+		borderTopWidth: 0,
+		marginHorizontal: 10,
+	},
 	rowBack: {
 		alignItems: 'center',
 		flex: 1,
