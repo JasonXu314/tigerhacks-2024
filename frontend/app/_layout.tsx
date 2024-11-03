@@ -11,8 +11,8 @@ SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
 	const [loaded] = useFonts({
 		JostRegular: require('../assets/fonts/Jost-Regular.ttf'),
-		JostBold: require('../assets/fonts/Jost-Bold.tff'),
-		JostSemiBold: require('../assets/fonts/Jost-SemiBold.tff'),
+		JostBold: require('../assets/fonts/Jost-Bold.ttf'),
+		JostSemiBold: require('../assets/fonts/Jost-SemiBold.ttf'),
 	});
 
 	useEffect(() => {

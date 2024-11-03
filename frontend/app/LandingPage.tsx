@@ -1,6 +1,10 @@
 import Banner from '@/components/bg/Banner';
+import RecipeBanner from '@/components/bg/RecipeBanner';
+import Logo from '@/components/Logo';
+import StaggeredDropAnimation from '@/components/StaggeredDropAnimation';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Image } from 'react-native';
 
 const LandingPage = () => {
     const router = useRouter();
@@ -8,13 +12,12 @@ const LandingPage = () => {
 	return (
 		<SafeAreaView style={styles.container}>
 			<Banner style={{ position: 'absolute', top: 0 }}></Banner>
-			<View style={{ position: 'absolute', top: '25%', alignSelf: 'center' }}>
-				<Text>PantryPal</Text>
-				{/* logo */}
+			<View style={{ position: 'absolute', top: '20%', alignSelf: 'center' }}>
+				<Logo></Logo>
 			</View>
+            <StaggeredDropAnimation/>
 			<View style={styles.bottomContainer}>
-				<Text style={styles.headerText}>Start reducing waste today!</Text>
-				<Text style={styles.description}>Reduce food waste by keeping track of your food's expiration dates</Text>
+				<Text style={styles.description}>Just shop and scan and let us do the tracking for you!</Text>
 				<TouchableOpacity style={styles.button} onPress={() => router.navigate('/LoginScreen')}>
 					<Text style={styles.buttonText}>Get started</Text>
 				</TouchableOpacity>

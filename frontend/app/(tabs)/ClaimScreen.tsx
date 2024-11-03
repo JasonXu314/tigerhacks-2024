@@ -24,7 +24,7 @@ export default function ClaimScreen() {
 			}
 
 			let location = await Location.getCurrentPositionAsync({});
-			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
+			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}&token=${SecureStorage.getItem('token')}`)
 				.then((resp) => {
 					setFoodData(resp.data);
 				})
@@ -85,14 +85,6 @@ export default function ClaimScreen() {
 
 	return (
 		<SafeAreaView>
-			<TouchableOpacity
-				onPress={() => {
-					SecureStorage.deleteItemAsync('token');
-                    router.navigate('/LoginScreen')
-				}}
-			>
-				<Text>LOG OUT</Text>
-			</TouchableOpacity>
 			<SwipeListView
 				data={foodData}
 				renderItem={renderItem}
