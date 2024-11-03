@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform, Linking } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 interface MarkerData {
@@ -38,10 +38,25 @@ const MapScreen: React.FC = () => {
     // Add more markers as needed
   ];
 
+  const openMapDirections = (latitude: number, longitude: number) => {
+    const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+    const latLng = `${latitude},${longitude}`;
+    const label   
+ = 'Custom Label';
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+    });
+
+    Linking.openURL(url);   
+
+  };
+
   return (
     <View style={styles.container}>
       <MapView
-        style={styles.map}
+        style={styles.map}   
+
         initialRegion={{
           latitude: 38.94,
           longitude: -92.326635,
@@ -49,7 +64,6 @@ const MapScreen: React.FC = () => {
           longitudeDelta: 0.0421,
         }}
       >
-        {/* Render your markers */}
         {markers.map((marker, index) => (
           <Marker
             key={index}
@@ -57,8 +71,11 @@ const MapScreen: React.FC = () => {
               latitude: marker.latitude,
               longitude: marker.longitude,
             }}
-            title={marker.title}
-            description={marker.description}
+            title={marker.title}   
+
+            description={marker.description}   
+
+            onCalloutPress={() => openMapDirections(marker.latitude, marker.longitude)} // Add onCalloutPress
           />
         ))}
       </MapView>
