@@ -11,12 +11,14 @@ import * as Location from 'expo-location';
 import { router } from 'expo-router';
 import { SearchBar } from '@rneui/themed';
 import Trash from '@/components/bg/Trash';
+import Loader from "@/components/Loader";
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<any>([]);
 	const [tempFoodData, setTempFoodData] = useState<any>([]);
 	const [refreshing, setRefreshing] = useState(false);
 	const [searchValue, setSearchValue] = useState('');
+	const [init, setInit] = useState(true);
 
 	const getOffers = async () => {
 		try {
@@ -32,6 +34,7 @@ export default function ClaimScreen() {
 				.then((resp) => {
 					setFoodData(resp.data);
 					setTempFoodData(resp.data);
+					setInit(false);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -79,7 +82,7 @@ export default function ClaimScreen() {
 				<View style={{ marginLeft: 'auto' }}>
 					<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
 					<Text style={styles.days}>
-						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} {Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) === 1 ? "day" : "days"} left
 					</Text>
 				</View>
 			</View>
@@ -93,6 +96,10 @@ export default function ClaimScreen() {
 			setRefreshing(false);
 		}, 2000);
 	}, []);
+
+	if (init) {
+        return <Loader/>
+    }
 
 	return (
 		<SafeAreaView>

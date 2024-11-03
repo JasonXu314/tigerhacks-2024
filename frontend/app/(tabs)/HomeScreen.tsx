@@ -21,8 +21,9 @@ const HomeScreen = () => {
 	const openRowRef = useRef<any>(null);
 
 	useEffect(() => {
+        console.log(foodItems)
 		setTempFoodItems(foodItems);
-	}, []);
+	}, [foodItems]);
 
 	const closeRow = (rowMap: any, rowKey: any) => {
 		if (rowMap[rowKey]) {
@@ -35,8 +36,11 @@ const HomeScreen = () => {
 			style={[
 				styles.rowFront,
 				{
-					backgroundColor:
-						Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white',
+					backgroundColor: item.public
+						? '#CED9FF'
+						: Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3
+						? '#FFDFDF'
+						: 'white',
 				},
 			]}
 		>
@@ -45,7 +49,7 @@ const HomeScreen = () => {
 				<Text style={styles.title}>{item.name}</Text>
 				<Text style={styles.exp}>Exp: {new Date(item.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}</Text>
 			</View>
-			<Text style={styles.days}>{Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left</Text>
+			<Text style={styles.days}>{Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} {Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) === 1 ? "day" : "days"} left</Text>
 		</View>
 	);
 
@@ -75,7 +79,13 @@ const HomeScreen = () => {
 				lat: location.coords.latitude,
 			})
 				.then((resp) => {
-					console.log(resp.data);
+					let temp = foodItems;
+					temp[temp.findIndex((item) => item.id === id)].public = true;
+					updateFoodItems([...temp]);
+                    
+                    temp = tempFoodItems;
+                    temp[temp.findIndex((item) => item.id === id)].public = true;
+                    setTempFoodItems([...temp])
 				})
 				.catch((err) => {
 					console.log(err);
@@ -88,7 +98,7 @@ const HomeScreen = () => {
 	const renderHiddenItem = (data: any, rowMap: any) => (
 		<View style={styles.rowBack}>
 			<TouchableOpacity
-				style={[styles.box, { backgroundColor: '#439C54' }]}
+				style={[styles.box, { backgroundColor: '#768BD5' }]}
 				onPress={() => {
 					closeRow(rowMap, data.item.id);
 					Alert.alert('Make Food Public', 'Are you sure you want to make your food publicly available? Your phone number will be shared.', [
@@ -104,7 +114,7 @@ const HomeScreen = () => {
 				<Text style={styles.boxText}>Public</Text>
 			</TouchableOpacity>
 			<TouchableOpacity
-				style={[styles.box, { backgroundColor: '#5BB46C' }]}
+				style={[styles.box, { backgroundColor: '#FEB762' }]}
 				onPress={() => {
 					closeRow(rowMap, data.item.id);
 					router.navigate({ pathname: '/ContactsScreen', params: { id: data.item.id } });
@@ -130,6 +140,8 @@ const HomeScreen = () => {
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTempFoodItems(foodItems);
+        console.log(foodItems)
+
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 2000);
@@ -151,29 +163,30 @@ const HomeScreen = () => {
 				}}
 				value={searchValue}
 			/>
-			{tempFoodItems.length > 0 && <SwipeListView
-				data={tempFoodItems}
-				contentContainerStyle={{ paddingBottom: 150 }}
-				renderItem={renderItem}
-				renderHiddenItem={renderHiddenItem}
-				rightOpenValue={-225}
-				disableRightSwipe={true}
-				tension={200}
-				friction={10}
-				previewOpenValue={-40}
-				previewOpenDelay={300}
-				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-				onSwipeValueChange={onSwipeValueChange}
-				keyExtractor={(item) => item.id}
-			/>}
-			{tempFoodItems.length === 0 && <View style={{ justifyContent: 'center', alignItems: 'center', height: '85%', gap: 15
-             }}>
-				<Image source={require('../../assets/bg/pantry.png')} style={{ marginBottom: 30, marginTop: -30, width: 120, height: 165 }}></Image>
-				<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>It's empty here...</Text>
-				<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>
-					Add groceries to your pantry by scanning your receipts!
-				</Text>
-			</View>}
+			{tempFoodItems.length > 0 && (
+				<SwipeListView
+					data={tempFoodItems}
+					contentContainerStyle={{ paddingBottom: 150 }}
+					renderItem={renderItem}
+					renderHiddenItem={renderHiddenItem}
+					rightOpenValue={-225}
+					disableRightSwipe={true}
+					tension={200}
+					friction={10}
+					previewOpenValue={-40}
+					previewOpenDelay={300}
+					refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+					onSwipeValueChange={onSwipeValueChange}
+					keyExtractor={(item) => item.id}
+				/>
+			)}
+			{tempFoodItems.length === 0 && (
+				<View style={{ justifyContent: 'center', alignItems: 'center', height: '85%', gap: 15 }}>
+					<Image source={require('../../assets/bg/pantry.png')} style={{ marginBottom: 30, marginTop: -30, width: 120, height: 165 }}></Image>
+					<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>It's empty here...</Text>
+					<Text style={{ color: '#606C38', fontFamily: 'JostRegular', fontSize: 15 }}>Add groceries to your pantry by scanning your receipts!</Text>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 };

@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Platform, Linking } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { View, StyleSheet, Platform, Linking, Text } from 'react-native';
+import MapView, { Marker, Callout } from 'react-native-maps';
 
 interface MarkerData {
   latitude: number;
@@ -35,7 +35,6 @@ const MapScreen: React.FC = () => {
       title: 'Progressive Missionary Baptist Church - Food Distribution Center',
       description: '702 Banks Ave, Columbia, MO 65203'
     }
-    // Add more markers as needed
   ];
 
   const openMapDirections = (latitude: number, longitude: number) => {
@@ -48,14 +47,14 @@ const MapScreen: React.FC = () => {
       android: `${scheme}${latLng}(${label})`
     });
 
-    Linking.openURL(url);   
+    Linking.openURL(url!);
 
   };
 
   return (
     <View style={styles.container}>
       <MapView
-        style={styles.map}   
+        style={styles.map}
 
         initialRegion={{
           latitude: 38.94,
@@ -76,16 +75,21 @@ const MapScreen: React.FC = () => {
             description={marker.description}   
 
             onCalloutPress={() => {
-              // For iOS, open Apple Maps directly with coordinates
               if (Platform.OS === 'ios') {
                 const url = `maps://app?daddr=${marker.latitude},${marker.longitude}`;
                 Linking.openURL(url);
               } else {
-                // For Android, use the existing openMapDirections function
                 openMapDirections(marker.latitude, marker.longitude);
               }
             }}
-          />
+          >
+            <Callout>
+           <View>
+               <Text style={styles.markerTitleText}>{marker.title}</Text>
+               <Text style={styles.markerDescText}>{marker.description}</Text>
+           </View>
+       </Callout>
+          </Marker>
         ))}
       </MapView>
     </View>
@@ -100,6 +104,13 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
+  markerTitleText: {
+    fontFamily: "JostRegular",
+    fontWeight: "bold",
+  },
+  markerDescText: {
+    fontFamily: "JostRegular",
+  }
 });
 
 export default MapScreen;

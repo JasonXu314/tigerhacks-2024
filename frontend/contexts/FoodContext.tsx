@@ -16,8 +16,8 @@ export const FoodContext = createContext<FoodContextType>({
 export const FoodProvider = ({ children }: { children: ReactNode }) => {
     const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
     
-	const updateFoodItems = (foodItems: FoodItem[]) => {
-        setFoodItems(foodItems);
+	const updateFoodItems = (items: FoodItem[]) => {
+        setFoodItems(items);
 	};
 
     useEffect(() => {

@@ -96,7 +96,6 @@ const CorrectionScreen = () => {
 													if (idx > -1) {
 														temp[idx] = { id: obj.id, text: e };
 														setFoodData([...temp]);
-														console.log(temp);
 													}
 												}}
 												value={obj.text}
@@ -166,6 +165,7 @@ const styles = StyleSheet.create({
 	title: {
 		color: '#6DC47E',
 		fontSize: 26,
+		fontFamily: "JostRegular",
 	},
 	row: {
 		display: 'flex',
@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
 		shadowOpacity: 0.25,
 		shadowRadius: 1,
 		flex: 1,
+		fontFamily: "JostRegular"
 	},
 });
 
