@@ -96,7 +96,6 @@ const CorrectionScreen = () => {
 													if (idx > -1) {
 														temp[idx] = { id: obj.id, text: e };
 														setFoodData([...temp]);
-														console.log(temp);
 													}
 												}}
 												value={obj.text}

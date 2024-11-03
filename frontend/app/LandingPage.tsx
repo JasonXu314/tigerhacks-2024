@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-end',
 		gap: 10,
 		paddingBottom: 25,
-        // marginBottom: 50
 	},
 	headerText: {
 		color: '#6DC47E',

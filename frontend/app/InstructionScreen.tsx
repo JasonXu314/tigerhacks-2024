@@ -105,6 +105,7 @@ const styles = StyleSheet.create({
 		paddingTop: 15,
         paddingBottom: 10,
         paddingLeft: 30,
+        fontFamily: 'JostRegular'
 	},
 	recipeText: {
 		fontSize: 14,

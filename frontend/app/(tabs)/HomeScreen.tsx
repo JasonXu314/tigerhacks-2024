@@ -21,6 +21,7 @@ const HomeScreen = () => {
 	const openRowRef = useRef<any>(null);
 
 	useEffect(() => {
+        console.log(foodItems)
 		setTempFoodItems(foodItems);
 	}, [foodItems]);
 
@@ -139,6 +140,8 @@ const HomeScreen = () => {
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
 		setTempFoodItems(foodItems);
+        console.log(foodItems)
+
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 2000);
