@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { SafeAreaView, Text, StyleSheet, Image, Button, TouchableOpacity, View } from "react-native";
+import { SafeAreaView, Text, StyleSheet, Image, Button, TouchableOpacity, View, ScrollView } from "react-native";
 import { router } from "expo-router";
 import BackArrow  from '@/components/BackArrow';
 import * as SecureStore from 'expo-secure-store';
@@ -50,7 +50,7 @@ const InstructionScreen = () => {
                 <Text style={styles.backBtnText}>view all recipes</Text>
                 </View>
             </TouchableOpacity>
-            <View>
+            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
                 <Text style={styles.recipeTitle}>{temp[1]}</Text>
                 <Image source={{ uri: temp[2]}} style={styles.recipeImage} />
                 <Text style={styles.recipeHeader}>Ingredients</Text>
@@ -63,7 +63,7 @@ const InstructionScreen = () => {
                 {recipeInstructions.map((recipeInstruction: any, i) => (
                     <Text style={styles.recipeText} key={i}>{"\u2022"} {recipeInstruction.step}</Text>
                 ))}
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     recipeText: {
         fontSize: 14,
         paddingLeft: 55,
+        paddingRight: 20,
     },
     recipeImage: {
         width: 200,
