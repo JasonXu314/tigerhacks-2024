@@ -99,7 +99,7 @@ const HomeScreen = () => {
 				style={[styles.box, { backgroundColor: '#5BB46C' }]}
 				onPress={() => {
                     closeRow(rowMap, data.item.id);
-					router.navigate({ pathname: '/ContactsScreen', params: { food: data.item } });
+					router.navigate({ pathname: '/ContactsScreen', params: { id: data.item.id } });
 				}}
 			>
 				<Icon name="person-outline" color="#fff" size={20} />
@@ -126,10 +126,6 @@ const HomeScreen = () => {
 		}, 2000);
 	}, []);
 
-    const onRowDidOpen = (rowKey: any) => {
-        console.log('This row opened', rowKey);
-    };
-
 	return (
 		<SwipeListView
 			data={foodItems}
@@ -137,7 +133,6 @@ const HomeScreen = () => {
 			renderHiddenItem={renderHiddenItem}
 			rightOpenValue={-225}
 			disableRightSwipe={true}
-			onRowDidOpen={onRowDidOpen}
 			tension={200}
 			friction={10}
 			previewOpenValue={-40}
