@@ -12,10 +12,10 @@ import { router } from 'expo-router';
 import { SearchBar } from '@rneui/themed';
 
 export default function ClaimScreen() {
-	const [foodData, setFoodData] = useState<FoodItem[]>([]);
-    const [tempFoodData, setTempFoodData] = useState<FoodItem[]>([]);
+	const [foodData, setFoodData] = useState<any>([]);
+	const [tempFoodData, setTempFoodData] = useState<any>([]);
 	const [refreshing, setRefreshing] = useState(false);
-    const [searchValue, setSearchValue] = useState('')
+	const [searchValue, setSearchValue] = useState('');
 
 	const getOffers = async () => {
 		try {
@@ -30,7 +30,7 @@ export default function ClaimScreen() {
 			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}&token=${SecureStorage.getItem('token')}`)
 				.then((resp) => {
 					setFoodData(resp.data);
-                    setTempFoodData(resp.data);
+					setTempFoodData(resp.data);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -54,34 +54,40 @@ export default function ClaimScreen() {
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => {
-        return 	(<View
-			style={[
-				styles.rowFront,
-				{
-					backgroundColor:
-						Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white',
-				},
-			]}
-		>
-			<Text style={styles.icon}>{item.foodItem.image}</Text>
-			<View>
-				<Text style={styles.title} numberOfLines={1}>{item.foodItem.name}</Text>
-				<Text style={styles.exp}>
-					Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
-				</Text>
+		return (
+			<View
+				style={[
+					styles.rowFront,
+					{
+						backgroundColor:
+							Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3
+								? '#FFDFDF'
+								: 'white',
+					},
+				]}
+			>
+				<Text style={styles.icon}>{item.foodItem.image}</Text>
+				<View>
+					<Text style={styles.title} numberOfLines={1}>
+						{item.foodItem.name}
+					</Text>
+					<Text style={styles.exp}>
+						Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
+					</Text>
+				</View>
+				<View style={{ marginLeft: 'auto' }}>
+					<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
+					<Text style={styles.days}>
+						{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+					</Text>
+				</View>
 			</View>
-			<View style={{ marginLeft: 'auto' }}>
-				<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
-				<Text style={styles.days}>
-					{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
-				</Text>
-			</View>
-		</View>)
-    };
+		);
+	};
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
-        getOffers();
+		getOffers();
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 2000);
@@ -89,7 +95,7 @@ export default function ClaimScreen() {
 
 	return (
 		<SafeAreaView>
-            <SearchBar
+			<SearchBar
 				lightTheme
 				round
 				autoCorrect={false}
@@ -98,7 +104,7 @@ export default function ClaimScreen() {
 				placeholder="Search"
 				inputStyle={{ fontSize: 15, fontFamily: 'JostRegular' }}
 				onChangeText={(val) => {
-					setTempFoodData([...foodData.filter((food) => food.name?.startsWith(val))]);
+					setTempFoodData([...foodData.filter((food: any) => food.foodItem.name?.startsWith(val))]);
 					setSearchValue(val);
 				}}
 				value={searchValue}
@@ -109,7 +115,7 @@ export default function ClaimScreen() {
 				disableRightSwipe={true}
 				disableLeftSwipe={true}
 				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                style={{height: '100%'}}
+				style={{ height: '100%' }}
 			/>
 		</SafeAreaView>
 	);
@@ -122,7 +128,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
 	},
-    search: {
+	search: {
 		backgroundColor: 'white',
 		borderBottomWidth: 0,
 		borderTopWidth: 0,
@@ -155,7 +161,7 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 19,
 		fontFamily: 'JostRegular',
-        maxWidth: 190,
+		maxWidth: 190,
 	},
 	exp: {
 		fontSize: 14,
