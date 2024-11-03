@@ -4,14 +4,16 @@ import { FoodItem, FoodOffer, User as UserT } from '@prisma/client';
 import axios from 'axios';
 import { Protected } from './auth/protected.decorator';
 import { AddFoodsDTO, OfferFoodDTO } from './pantry/pantry.dtos';
-import { Recipe } from './pantry/pantry.models';
+import { FullRecipe, Instruction, Recipe } from './pantry/pantry.models';
 import { PantryService } from './pantry/pantry.service';
+import { AlertContactsDTO } from './users/users.dtos';
+import { UsersService } from './users/users.service';
 import { Page } from './utils/decorators/page.decorator';
 import { User } from './utils/decorators/user.decorator';
 
 @Controller()
 export class AppController {
-	constructor(private readonly service: PantryService) {}
+	constructor(private readonly service: PantryService, private readonly users: UsersService) {}
 
 	@Page()
 	@Get('/users/:id/pantry')
@@ -59,6 +61,12 @@ export class AppController {
 		return this.service.getRecipes(user);
 	}
 
+	@Protected()
+	@Get('/recipe-details')
+	public async getRecipeDetails(@Query('id', ParseIntPipe) id: number): Promise<FullRecipe & { instructions: Instruction[] }> {
+		return this.service.getDetails(id);
+	}
+
 	@Get('/city')
 	public async getCity(@Query() data: OfferFoodDTO): Promise<string> {
 		return axios
@@ -80,8 +88,14 @@ export class AppController {
 	}
 
 	@Get('/offers')
-	public async getOfferedItems(@Query('lat') lat: string, @Query('lng') lng: string) {
-		return this.service.getOffers(await this.getCity({ lat, lng }));
+	public async getOfferedItems(@Query('lat') lat: string, @Query('lng') lng: string, @User() user: UserT | null) {
+		return this.service.getOffers(await this.getCity({ lat, lng }), user);
+	}
+
+	@Protected()
+	@Post('/alert-contacts')
+	public async alertContacts(@User() user: UserT, @Body() data: AlertContactsDTO): Promise<void> {
+		return this.users.alertContacts(user, data);
 	}
 }
 

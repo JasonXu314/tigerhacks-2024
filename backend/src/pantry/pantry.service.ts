@@ -8,7 +8,7 @@ import { DBService } from 'src/db/db.service';
 import { FoodsService } from 'src/foods/foods.service';
 import { publicAttrs } from 'src/users/users.models';
 import { AddFoodsDTO } from './pantry.dtos';
-import { OCRLine, Recipe } from './pantry.models';
+import { FullRecipe, Instruction, OCRLine, Recipe } from './pantry.models';
 
 @Injectable()
 export class PantryService {
@@ -34,7 +34,6 @@ export class PantryService {
 
 			rmSync(tmpFile);
 			rmSync(outFile);
-			console.log(lines);
 
 			return lines
 				.filter((ln) => ln.confidence >= 0.5)
@@ -48,35 +47,50 @@ export class PantryService {
 	}
 
 	public async getFoods(user: User): Promise<FoodItem[]> {
-		return this.db.foodItem.findMany({ where: { userId: user.id } });
+		return this.db.foodItem.findMany({ where: { userId: user.id }, orderBy: { expDate: 'asc' } });
 	}
 
 	public async addFoods(dto: AddFoodsDTO, user: User): Promise<FoodItem[]> {
 		const now = new Date();
-		console.log(user);
 		const foods = await Promise.all(
-			dto.names.map(async (name) => ({
-				userId: user.id,
-				name,
-				boughtDate: now,
-				expDate: await this.foods.getExpDate(name, now),
-				image:
-					[
-						['potatoes', '🥔'],
-						['grapes', '🍇'],
-						['snow peas', '🫛'],
-						['steak', '🥩'],
-						['buns', '🥖'],
-						['toast', '🍞']
-					].reduce((emote, [n, e]) => (name.toLowerCase().includes(n) ? e : emote), '') || '🥬'
-			}))
+			dto.names
+				.map((name) => name.charAt(0).toUpperCase() + name.slice(1).toLowerCase())
+				.map(async (name) => ({
+					userId: user.id,
+					name,
+					boughtDate: now,
+					expDate: await this.foods.getExpDate(name, now),
+					image:
+						[
+							['potatoes', '🥔'],
+							['grapes', '🍇'],
+							['snow peas', '🫛'],
+							['steak', '🥩'],
+							['buns', '🥖'],
+							['toast', '🍞'],
+							['broccoli', '🥦'],
+							['banana', '🍌'],
+							['zuchinni', '🥒']
+						].reduce((emote, [n, e]) => (name.toLowerCase().includes(n) ? e : emote), '') || '🥬'
+				}))
+		).then((foods) =>
+			foods.filter(
+				(
+					food
+				): food is {
+					userId: string;
+					name: string;
+					boughtDate: Date;
+					expDate: Date;
+					image: string;
+				} => food.expDate !== null
+			)
 		);
 
 		await this.db.foodItem.createMany({
 			data: foods
 		});
 
-		console.log(user);
 		return this.db.foodItem.findMany({ where: { userId: user.id } });
 	}
 
@@ -87,14 +101,27 @@ export class PantryService {
 	public async getRecipes(user: User): Promise<Recipe[]> {
 		const ingredients = await this.db.foodItem.findMany({ where: { userId: user.id } });
 
-		return axios.get(`https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients.map((food) => food.name).join(',')}&number=20`, {
-			headers: { 'X-Api-Key': process.env.SPOONACULAR_KEY! }
-		});
+		return axios
+			.get<Recipe[]>(`https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredients.map((food) => food.name).join(',')}&number=20`, {
+				headers: { 'X-Api-Key': process.env.SPOONACULAR_KEY! }
+			})
+			.then((res) => res.data)
+			.catch((err) => {
+				console.log(err, err.response.data);
+				throw new InternalServerErrorException('Upstream api error');
+			});
 	}
 
-	public async getOffers(location?: string) {
+	public async getDetails(recipeId: number): Promise<FullRecipe & { instructions: Instruction[] }> {
+		return Promise.all([
+			axios.get<FullRecipe>(`https://api.spoonacular.com/recipes/${recipeId}/information`).then((res) => res.data),
+			axios.get<Instruction[]>(`https://api.spoonacular.com/recipes/${recipeId}/analyzedInstructions`).then((res) => res.data)
+		]).then<FullRecipe & { instructions: Instruction[] }>(([recipe, instructions]) => ({ ...recipe, instructions }));
+	}
+
+	public async getOffers(location?: string, user: User | null = null) {
 		return this.db.foodOffer.findMany({
-			where: { location },
+			where: { location, userId: { not: user?.id } },
 			include: {
 				foodItem: true,
 				owner: publicAttrs

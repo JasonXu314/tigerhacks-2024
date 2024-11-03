@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import axios from 'axios';
 import { FoodData } from './foods.models';
 
@@ -13,7 +13,8 @@ export class FoodsService {
 				res.data.product_data.concat(
 					(
 						[
-							['potatoes', '10 - 12 months', '2 weeks', null],
+							//						fudged for demo purposes; potatoes do not actually expire in 40sec
+							['potatoes', '10 - 12 months', '40 seconds', null],
 							['brussel sprouts', '12 - 14 months', '1 - 2 weeks', '3 - 4 days'],
 							['grapes', '3 months', '1 - 2 weeks', null],
 							['snow peas', '10 - 12 months', '1 week', null],
@@ -47,7 +48,7 @@ export class FoodsService {
 			);
 	}
 
-	public async getExpDate(name: string, boughtDate: Date): Promise<Date> {
+	public async getExpDate(name: string, boughtDate: Date): Promise<Date | null> {
 		const foods = (await this.data)
 			.map<[FoodData, number]>((food) => {
 				const q = name.toLowerCase();
@@ -91,17 +92,19 @@ export class FoodsService {
 					return new Date(boughtDate.valueOf() + qty * 7 * 24 * 60 * 60 * 1000);
 				} else if (unit.toLowerCase() === 'days' || unit.toLowerCase() === 'day') {
 					return new Date(boughtDate.valueOf() + qty * 24 * 60 * 60 * 1000);
+				} else if (unit.toLowerCase() === 'seconds' || unit.toLowerCase() === 'second') {
+					return new Date(boughtDate.valueOf() + qty * 1000);
 				} else {
 					console.log(`Unrecognized unit ${unit}`);
 					throw new InternalServerErrorException(`Unrecognized unit ${unit}`);
 				}
 			} else {
 				console.log(`No match for ${rawExp}`);
-				throw new InternalServerErrorException(`No match for ${rawExp}`);
+				return null;
 			}
 		} else {
-			console.log(`${name} not found`);
-			throw new NotFoundException(`${name} not found`);
+			console.log(`${name} not found`, foods);
+			return null;
 		}
 	}
 }

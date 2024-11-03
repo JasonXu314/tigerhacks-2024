@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { init } from '@paralleldrive/cuid2';
 import { User } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto';
 import * as notifApi from 'notificationapi-node-server-sdk';
 import { AuthDataSource } from 'src/auth/auth.module';
 import { DBService } from 'src/db/db.service';
-import { SignupDTO } from './users.dtos';
+import { AlertContactsDTO, SignupDTO } from './users.dtos';
 
 @Injectable()
 export class UsersService implements AuthDataSource {
@@ -84,6 +84,48 @@ export class UsersService implements AuthDataSource {
 			return this.db.user.update({ where: { id: user.id }, data: { verified: true } });
 		} else {
 			throw new BadRequestException('Invalid verification code');
+		}
+	}
+
+	public async resend(user: User): Promise<void> {
+		const code = Math.round(Math.random() * 999999)
+			.toString()
+			.padStart(6, '0');
+		this.codes.set(user.token, code);
+		setTimeout(() => this.codes.delete(user.token), 60_000);
+
+		notifApi.send({
+			notificationId: 'phone_confirmation',
+			user: {
+				id: user.phone,
+				number: `+1${user.phone}`
+			},
+			mergeTags: {
+				code: code
+			}
+		});
+	}
+
+	public async alertContacts(user: User, data: AlertContactsDTO): Promise<void> {
+		const food = await this.db.foodItem.findUnique({ where: { userId_id: { userId: user.id, id: data.foodId } } });
+
+		if (food) {
+			data.phones.forEach((number) =>
+				notifApi.send({
+					notificationId: 'expiring_food',
+					user: {
+						id: number,
+						number
+					},
+					mergeTags: {
+						user: user.firstName,
+						food: food.name,
+						number: user.phone
+					}
+				})
+			);
+		} else {
+			throw new NotFoundException('Invalid food ID');
 		}
 	}
 }

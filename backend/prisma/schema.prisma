@@ -35,7 +35,7 @@ model FoodItem {
     expDate    DateTime
     image      String
 
-    owner  User        @relation(fields: [userId], references: [id])
+    owner  User        @relation(fields: [userId], references: [id], onDelete: Cascade)
     offers FoodOffer[]
 
     @@id([userId, id])
@@ -47,8 +47,8 @@ model FoodOffer {
     foodId   Int
     location String
 
-    foodItem FoodItem @relation(fields: [userId, foodId], references: [userId, id])
-    owner    User     @relation(fields: [userId], references: [id])
+    foodItem FoodItem @relation(fields: [userId, foodId], references: [userId, id], onDelete: Cascade)
+    owner    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@id([userId, foodId])
 }

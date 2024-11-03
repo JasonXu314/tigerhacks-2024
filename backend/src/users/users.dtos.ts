@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsInt, IsString } from 'class-validator';
 import { fi } from 'src/utils/utils';
 
 export class SignupDTO {
@@ -16,3 +16,12 @@ export class VerifyDTO {
 	@IsString()
 	code: string = fi();
 }
+
+export class AlertContactsDTO {
+	@IsString({ each: true })
+	phones: string[] = fi();
+
+	@IsInt()
+	foodId: number = fi();
+}
+

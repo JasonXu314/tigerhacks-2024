@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
 			const req = context.switchToHttp().getRequest<Request>();
 			const user = req.user;
 
-			if (user === null) {
+			if (!user) {
 				return false;
 			} else {
 				return user.verified;

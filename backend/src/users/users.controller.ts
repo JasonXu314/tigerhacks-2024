@@ -29,6 +29,13 @@ export class UsersController {
 	}
 
 	@Protected()
+	@Post('/resend')
+	public async resend(@User() user: UserT): Promise<void> {
+		console.log('resend', user);
+		return this.service.resend(user);
+	}
+
+	@Protected()
 	@Post('/verify')
 	public async verify(@User() user: UserT, @Body() data: VerifyDTO): Promise<UserT> {
 		return this.service.claim(data.code, user);
