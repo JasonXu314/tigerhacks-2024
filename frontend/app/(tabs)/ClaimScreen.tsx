@@ -53,19 +53,19 @@ export default function ClaimScreen() {
 	};
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
-	const renderItem = ({ item }: { item: any }) => (
-		<View
+	const renderItem = ({ item }: { item: any }) => {
+        return 	(<View
 			style={[
 				styles.rowFront,
 				{
 					backgroundColor:
-						Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white',
+						Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white',
 				},
 			]}
 		>
 			<Text style={styles.icon}>{item.foodItem.image}</Text>
 			<View>
-				<Text style={styles.title}>{item.foodItem.name.charAt(0).toUpperCase() + item.foodItem.name.slice(1).toLowerCase()}</Text>
+				<Text style={styles.title} numberOfLines={1}>{item.foodItem.name}</Text>
 				<Text style={styles.exp}>
 					Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
 				</Text>
@@ -76,8 +76,8 @@ export default function ClaimScreen() {
 					{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
 				</Text>
 			</View>
-		</View>
-	);
+		</View>)
+    };
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
@@ -155,6 +155,7 @@ const styles = StyleSheet.create({
 	title: {
 		fontSize: 19,
 		fontFamily: 'JostRegular',
+        maxWidth: 190,
 	},
 	exp: {
 		fontSize: 14,
