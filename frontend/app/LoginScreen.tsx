@@ -55,7 +55,6 @@ const LoginScreen = ({ setIsLoggedIn }: Props) => {
 	const handleConfirmationButtonPress = async () => {
 		try {
 			const response = await api.post('/users/verify', { code: '' + value }, { params: { token: token } });
-			console.log(response.data);
 			const verified = response.data['verified'];
 			if (verified) {
 				SecureStore.setItem('token', token);

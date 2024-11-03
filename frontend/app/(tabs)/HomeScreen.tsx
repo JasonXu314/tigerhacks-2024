@@ -21,7 +21,6 @@ const HomeScreen = () => {
 	const openRowRef = useRef<any>(null);
 
 	useEffect(() => {
-        console.log(foodItems)
 		setTempFoodItems(foodItems);
 	}, [foodItems]);
 
