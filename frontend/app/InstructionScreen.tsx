@@ -44,12 +44,9 @@ const InstructionScreen = () => {
     
     return (
         <SafeAreaView>
-            <TouchableOpacity style={styles.backButton} onPress={() => router.navigate({pathname: '/RecipesScreen'})}>
-                <View style={styles.backArrowContainer}>
-                <BackArrow />
-                <Text style={styles.backBtnText}>view all recipes</Text>
-                </View>
-            </TouchableOpacity>
+            <View style={styles.header}>
+        <BackArrow/>
+            </View>
             <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
                 <Text style={styles.recipeTitle}>{temp[1]}</Text>
                 <Image source={{ uri: temp[2]}} style={styles.recipeImage} />
@@ -69,6 +66,11 @@ const InstructionScreen = () => {
 }
  
 const styles = StyleSheet.create({
+    header: {
+        width: '100%',
+        paddingLeft: 25,
+        paddingTop: 10
+    },
     recipeTitle: {
         fontSize: 36,
         padding: 30,
