@@ -4,7 +4,7 @@ import api from '@/services/AxiosConfig';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,6 +19,10 @@ const HomeScreen = () => {
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const openRowRef = useRef<any>(null);
+
+    useEffect(() => {
+        setTempFoodItems(foodItems);
+    }, [])
 
 	const closeRow = (rowMap: any, rowKey: any) => {
 		if (rowMap[rowKey]) {
@@ -38,7 +42,7 @@ const HomeScreen = () => {
 		>
 			<Text style={styles.icon}>{item.image}</Text>
 			<View>
-				<Text style={styles.title}>{item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}</Text>
+				<Text style={styles.title}>{item.name}</Text>
 				<Text style={styles.exp}>Exp: {new Date(item.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}</Text>
 			</View>
 			<Text style={styles.days}>{Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left</Text>
@@ -125,6 +129,7 @@ const HomeScreen = () => {
 
 	const onRefresh = React.useCallback(() => {
 		setRefreshing(true);
+        setTempFoodItems(foodItems);
 		setTimeout(() => {
 			setRefreshing(false);
 		}, 2000);
@@ -148,6 +153,7 @@ const HomeScreen = () => {
 			/>
 			<SwipeListView
 				data={tempFoodItems}
+                contentContainerStyle={{paddingBottom: 150}}
 				renderItem={renderItem}
 				renderHiddenItem={renderHiddenItem}
 				rightOpenValue={-225}
@@ -166,10 +172,9 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
     search: {
-		backgroundColor: 'transparent',
+		backgroundColor: 'white',
 		borderBottomWidth: 0,
 		borderTopWidth: 0,
-		marginHorizontal: 10,
 	},
 	rowBack: {
 		alignItems: 'center',

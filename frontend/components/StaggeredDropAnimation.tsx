@@ -1,34 +1,36 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, Animated, StyleSheet, Image, ImageSourcePropType } from 'react-native';
+import { View, Text, Animated, StyleSheet, Image, ImageSourcePropType, Easing } from 'react-native';
 import GroceryBag from './GroceryBag';
 import Camera from './Camera';
 import Receipt from './Receipt';
 
 const StaggeredDropAnimation: React.FC = () => {
   // Initialize animated values for each icon and text pair
-  const dropAnim1 = useRef(new Animated.Value(-100)).current;
-  const dropAnim2 = useRef(new Animated.Value(-100)).current;
-  const dropAnim3 = useRef(new Animated.Value(-100)).current;
+  const dropAnim1 = useRef(new Animated.Value(-300)).current;
+  const dropAnim2 = useRef(new Animated.Value(-300)).current;
+  const dropAnim3 = useRef(new Animated.Value(-300)).current;
 
   useEffect(() => {
-    // Start animations with staggered delay for each column
     Animated.sequence([
       Animated.timing(dropAnim1, {
         toValue: 0,
-        duration: 600,
+        duration: 500,
         useNativeDriver: true,
+        easing: Easing.elastic(1),
       }),
       Animated.timing(dropAnim2, {
         toValue: 0,
-        duration: 600,
+        duration: 500,
         useNativeDriver: true,
-        delay: 200,
+        delay: 150,
+        easing: Easing.elastic(1),
       }),
       Animated.timing(dropAnim3, {
         toValue: 0,
-        duration: 600,
+        duration: 500,
         useNativeDriver: true,
-        delay: 400,
+        delay: 300,
+        easing: Easing.elastic(1),
       }),
     ]).start();
   }, []);
@@ -40,31 +42,26 @@ const StaggeredDropAnimation: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* First Group: "Shop" */}
       <Animated.View style={iconStyles(dropAnim1)}>
-        <View style={styles.group}>
+        <View style={[styles.group, {marginLeft: -20}]}>
           <Text style={styles.number}>1.</Text>
-          <Receipt></Receipt>
+          <Receipt style={{marginLeft: -5}}></Receipt>
         </View>
           <Text style={styles.columnText}>Shop.</Text>
       </Animated.View>
-
-      {/* Second Group: "Scan" */}
       <Animated.View style={iconStyles(dropAnim2)}>
         <View style={styles.group}>
           <Text style={styles.number}>2.</Text>
-          <Camera></Camera>
+          <Camera style={{marginLeft: -7}}></Camera>
         </View>
-          <Text style={styles.columnText}>Scan</Text>
+          <Text style={[styles.columnText, {paddingLeft: 6}]}>Scan.</Text>
       </Animated.View>
-
-      {/* Third Group: "Track" */}
       <Animated.View style={iconStyles(dropAnim3)}>
-        <View style={styles.group}>
+        <View style={[styles.group, {marginLeft: 15}]}>
           <Text style={styles.number}>3.</Text>
-          <GroceryBag></GroceryBag>
+          <GroceryBag style={{marginLeft: -11}}></GroceryBag>
         </View>
-          <Text style={styles.columnText}>Track</Text>
+          <Text style={styles.columnText}>Track.</Text>
       </Animated.View>
     </View>
   );
@@ -72,11 +69,9 @@ const StaggeredDropAnimation: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'center',
-    backgroundColor: '#F5F5F5',
   },
   iconContainer: {
     // marginBottom: 20,
@@ -90,8 +85,7 @@ const styles = StyleSheet.create({
     fontSize: 42,
     fontWeight: 'bold',
     marginRight: 10,
-    fontFamily: 'JostRegular',
-    backgroundColor: 'blue',
+    fontFamily: 'JostSemiBold',
     marginBottom: -10
   },
   icon: {
@@ -100,10 +94,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   columnText: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: 38,
     color: '#4CAF50',
-    fontFamily: 'JostRegular'
+    fontFamily: 'JostRegular',
   },
 });
 

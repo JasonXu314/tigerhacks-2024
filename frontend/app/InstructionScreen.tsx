@@ -2,27 +2,64 @@ import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView, Text, StyleSheet, Image, Button, TouchableOpacity, View } from "react-native";
 import { router } from "expo-router";
 import BackArrow  from '@/components/BackArrow';
+import * as SecureStore from 'expo-secure-store';
+import api from '@/services/AxiosConfig';
+import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
 
 const InstructionScreen = () => {
-    const {data} = useLocalSearchParams();
-    console.log(data);
+    const [recipeInstructions, setRecipeInstructions] = useState("")
+    const [ingredients, setIngredients] = useState([])
+    const [init, setInit] = useState(true);
 
+    const {data} = useLocalSearchParams();
     let dataString = Array.isArray(data) ? data.join("") : data;
-    console.log(dataString.split(","))
     let temp = dataString.split(",")
-    console.log(temp)
-    
+   
+    useEffect(() => {
+        requestRecipeDetails();
+      }, []);
+
+    const requestRecipeDetails = async () => {
+        try {
+            const token = await SecureStore.getItem('token');
+            const response = await api.get('/recipe-details', {
+                params: {
+                    token: token,
+                    id: temp[0]
+                }
+            });
+            
+            setIngredients(response.data.extendedIngredients)
+            setInit(false);
+        } catch (error: any) {
+            console.error('Error fetching recipes:', error.response.data)
+        }
+    };
+
+    if (init) {
+        return <Loader/>
+    }
+
     return (
         <SafeAreaView>
             <TouchableOpacity style={styles.backButton} onPress={() => router.navigate({pathname: '/RecipesScreen'})}>
+                <View style={styles.backArrowContainer}>
                 <BackArrow />
                 <Text style={styles.backBtnText}>view all recipes</Text>
+                </View>
             </TouchableOpacity>
             <View>
                 <Text style={styles.recipeTitle}>{temp[1]}</Text>
                 <Image source={{ uri: temp[2]}} style={styles.recipeImage} />
                 <Text style={styles.recipeHeader}>Ingredients</Text>
-                <Text style={styles.recipeText}>blah blah blah</Text>
+                {/* Ingredients go here */}
+                {ingredients.map((ingredient: any, i) => (
+                    <Text key={i}>{ingredient.original}</Text>
+                ))
+
+                }
+                
                 <Text style={styles.recipeHeader}>Directions</Text>
                 <Text style={styles.recipeText}>blah blah</Text>
             </View>
@@ -53,8 +90,13 @@ const styles = StyleSheet.create({
         color: "#439C54"
     },
     backButton: {
-        padding: 40,
-    }
+        paddingLeft: 20,
+        paddingTop: 45,
+    },
+    backArrowContainer: {
+        flexDirection: 'row', 
+        alignItems: 'center', 
+    },
   });
 
 export default InstructionScreen;
