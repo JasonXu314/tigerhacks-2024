@@ -1,3 +1,5 @@
+import { FoodItem } from '@prisma/client';
+
 export interface OCRLine {
 	text: string;
 	confidence: number;
@@ -112,3 +114,4 @@ export interface Wine {
 	link: string;
 }
 
+export type UserFoodItem = FoodItem & { public: boolean };
