@@ -9,10 +9,13 @@ import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
 import * as Location from 'expo-location';
 import { router } from 'expo-router';
+import { SearchBar } from '@rneui/themed';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<FoodItem[]>([]);
+    const [tempFoodData, setTempFoodData] = useState<FoodItem[]>([]);
 	const [refreshing, setRefreshing] = useState(false);
+    const [searchValue, setSearchValue] = useState('')
 
 	const getOffers = async () => {
 		try {
@@ -27,6 +30,7 @@ export default function ClaimScreen() {
 			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}&token=${SecureStorage.getItem('token')}`)
 				.then((resp) => {
 					setFoodData(resp.data);
+                    setTempFoodData(resp.data);
 				})
 				.catch((err) => {
 					console.log(err);
@@ -85,8 +89,22 @@ export default function ClaimScreen() {
 
 	return (
 		<SafeAreaView>
+            <SearchBar
+				lightTheme
+				round
+				autoCorrect={false}
+				containerStyle={styles.search}
+				inputContainerStyle={{ backgroundColor: 'white' }}
+				placeholder="Search"
+				inputStyle={{ fontSize: 15, fontFamily: 'JostRegular' }}
+				onChangeText={(val) => {
+					setTempFoodData([...foodData.filter((food) => food.name?.startsWith(val))]);
+					setSearchValue(val);
+				}}
+				value={searchValue}
+			/>
 			<SwipeListView
-				data={foodData}
+				data={tempFoodData}
 				renderItem={renderItem}
 				disableRightSwipe={true}
 				disableLeftSwipe={true}
@@ -103,6 +121,11 @@ const styles = StyleSheet.create({
 		flex: 1,
 		flexDirection: 'row',
 		justifyContent: 'flex-end',
+	},
+    search: {
+		backgroundColor: 'white',
+		borderBottomWidth: 0,
+		borderTopWidth: 0,
 	},
 	box: {
 		width: 75,
