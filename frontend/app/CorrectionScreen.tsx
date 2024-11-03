@@ -36,10 +36,7 @@ const CorrectionScreen = () => {
 			names: foods
 		})
 			.then((resp) => {
-				console.log(resp.data);
 				updateFoodItems(resp.data);
-
-				console.log(Notifications.getAllScheduledNotificationsAsync());
 
 				Notifications.getAllScheduledNotificationsAsync().then((noti) => {
 					resp.data.forEach(({ name, expDate, boughtDate, id }) => {

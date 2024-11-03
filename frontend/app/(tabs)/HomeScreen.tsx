@@ -4,25 +4,38 @@ import api from '@/services/AxiosConfig';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import * as SecureStorage from 'expo-secure-store';
-import React, { useContext, useRef } from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useContext, useRef, useState } from 'react';
+import { Alert, StyleSheet, Text, TouchableOpacity, View, RefreshControl, SafeAreaView } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { SearchBar } from '@rneui/themed';
 
 const HomeScreen = () => {
 	const { foodItems, updateFoodItems } = useContext(FoodContext);
+	const [refreshing, setRefreshing] = useState(false);
+	const [tempFoodItems, setTempFoodItems] = useState<FoodItem[]>([]);
+    const [searchValue, setSearchValue] = useState('')
 	const router = useRouter();
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
+	const openRowRef = useRef<any>(null);
+
+	const closeRow = (rowMap: any, rowKey: any) => {
+		if (rowMap[rowKey]) {
+			rowMap[rowKey].closeRow();
+		}
+	};
+
 	const renderItem = ({ item }: { item: any }) => (
 		<View
 			style={[
 				styles.rowFront,
 				{
 					backgroundColor:
-						Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white'
-				}
-			]}>
+						Math.ceil(Math.abs(new Date(item.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) < 3 ? '#FFDFDF' : 'white',
+				},
+			]}
+		>
 			<Text style={styles.icon}>{item.image}</Text>
 			<View>
 				<Text style={styles.title}>{item.name.charAt(0).toUpperCase() + item.name.slice(1).toLowerCase()}</Text>
@@ -36,6 +49,7 @@ const HomeScreen = () => {
 		api.delete(`/food-item/${id}?token=${SecureStorage.getItem('token')}`)
 			.then((resp) => {
 				updateFoodItems([...foodItems.filter((item) => item.id != id)]);
+                setTempFoodItems([...tempFoodItems.filter((item) => item.id != id)])
 			})
 			.catch((err) => {
 				console.log(err);
@@ -54,7 +68,7 @@ const HomeScreen = () => {
 			let location = await Location.getCurrentPositionAsync({});
 			api.post(`/food-item/${id}/offer?token=${SecureStorage.getItem('token')}`, {
 				lng: location.coords.longitude,
-				lat: location.coords.latitude
+				lat: location.coords.latitude,
 			})
 				.then((resp) => {
 					console.log(resp.data);
@@ -69,13 +83,29 @@ const HomeScreen = () => {
 
 	const renderHiddenItem = (data: any, rowMap: any) => (
 		<View style={styles.rowBack}>
-			<TouchableOpacity style={[styles.box, { backgroundColor: '#439C54' }]} onPress={() => offerToPublic(data.item.id)}>
+			<TouchableOpacity
+				style={[styles.box, { backgroundColor: '#439C54' }]}
+				onPress={() => {
+					closeRow(rowMap, data.item.id);
+					Alert.alert('Make Food Public', 'Are you sure you want to make your food publicly available? Your phone number will be shared.', [
+						{
+							text: 'Cancel',
+							style: 'cancel',
+						},
+						{ text: 'OK', onPress: () => offerToPublic(data.item.id) },
+					]);
+				}}
+			>
 				<Icon name="globe-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Public</Text>
 			</TouchableOpacity>
 			<TouchableOpacity
 				style={[styles.box, { backgroundColor: '#5BB46C' }]}
-				onPress={() => router.navigate({ pathname: '/ContactsScreen', params: { food: data.item } })}>
+				onPress={() => {
+					closeRow(rowMap, data.item.id);
+					router.navigate({ pathname: '/ContactsScreen', params: { id: data.item.id } });
+				}}
+			>
 				<Icon name="person-outline" color="#fff" size={20} />
 				<Text style={styles.boxText}>Friends</Text>
 			</TouchableOpacity>
@@ -93,28 +123,59 @@ const HomeScreen = () => {
 		}
 	};
 
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 2000);
+	}, []);
+
 	return (
-		<SwipeListView
-			data={foodItems}
-			renderItem={renderItem}
-			renderHiddenItem={renderHiddenItem}
-			rightOpenValue={-225}
-			disableRightSwipe={true}
-			tension={200}
-			friction={10}
-			previewOpenValue={-40}
-			previewOpenDelay={300}
-			onSwipeValueChange={onSwipeValueChange}
-		/>
-	);
+		<SafeAreaView>
+			<SearchBar
+				lightTheme
+				round
+				autoCorrect={false}
+				containerStyle={styles.search}
+				inputContainerStyle={{ backgroundColor: 'white' }}
+				placeholder="Search"
+				inputStyle={{ fontSize: 15, fontFamily: 'JostRegular' }}
+				onChangeText={(val) => {
+					setTempFoodItems([...foodItems.filter((food) => food.name?.startsWith(val))]);
+					setSearchValue(val);
+				}}
+				value={searchValue}
+			/>
+			<SwipeListView
+				data={tempFoodItems}
+				renderItem={renderItem}
+				renderHiddenItem={renderHiddenItem}
+				rightOpenValue={-225}
+				disableRightSwipe={true}
+				tension={200}
+				friction={10}
+				previewOpenValue={-40}
+				previewOpenDelay={300}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+				onSwipeValueChange={onSwipeValueChange}
+				keyExtractor={(item) => item.id}
+			/>
+		</SafeAreaView>
+	);  
 };
 
 const styles = StyleSheet.create({
+    search: {
+		backgroundColor: 'transparent',
+		borderBottomWidth: 0,
+		borderTopWidth: 0,
+		marginHorizontal: 10,
+	},
 	rowBack: {
 		alignItems: 'center',
 		flex: 1,
 		flexDirection: 'row',
-		justifyContent: 'flex-end'
+		justifyContent: 'flex-end',
 	},
 	box: {
 		width: 75,
@@ -122,12 +183,12 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		alignItems: 'center',
 		justifyContent: 'center',
-		height: '100%'
+		height: '100%',
 	},
 	boxText: {
 		color: 'white',
 		fontSize: 12,
-		fontFamily: 'JostRegular'
+		fontFamily: 'JostRegular',
 	},
 	rowFront: {
 		backgroundColor: 'white',
@@ -136,27 +197,26 @@ const styles = StyleSheet.create({
 		borderBottomColor: '#EDECEC',
 		flexDirection: 'row',
 		alignItems: 'center',
-		gap: 10
+		gap: 10,
 	},
 	icon: {
-		fontSize: 32
+		fontSize: 32,
 	},
 	title: {
 		fontSize: 19,
-		fontFamily: 'JostRegular'
+		fontFamily: 'JostRegular',
 	},
 	exp: {
 		fontSize: 14,
 		fontFamily: 'JostRegular',
-		color: '#606C38'
+		color: '#606C38',
 	},
 	days: {
 		fontSize: 17,
 		fontFamily: 'JostRegular',
 		marginLeft: 'auto',
-		color: '#606C38'
-	}
+		color: '#606C38',
+	},
 });
 
 export default HomeScreen;
-

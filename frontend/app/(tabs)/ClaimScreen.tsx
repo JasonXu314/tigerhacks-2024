@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, SafeAreaView, RefreshControl } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { FoodContext } from '@/contexts/FoodContext';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -7,36 +7,46 @@ import api from '@/services/AxiosConfig';
 import { createContext, ReactNode, useEffect } from 'react';
 import * as SecureStorage from 'expo-secure-store';
 import { FoodItem } from '@/interfaces/FoodItem';
-import * as Location from "expo-location";
+import * as Location from 'expo-location';
+import { router } from 'expo-router';
 
 export default function ClaimScreen() {
 	const [foodData, setFoodData] = useState<FoodItem[]>([]);
-    
-    const getOffers = async() => {
-        try {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-      
-            if (status !== "granted") {
-              Alert.alert("Location access required. Please enable in settings.")
-              return;
-            }
-      
-            let location = await Location.getCurrentPositionAsync({});
-            api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
-			.then((resp) => {
-				setFoodData(resp.data);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-          } catch (error) {
-            console.error("Error requesting location permission:", error);
-          }
-    }
+	const [refreshing, setRefreshing] = useState(false);
+
+	const getOffers = async () => {
+		try {
+			let { status } = await Location.requestForegroundPermissionsAsync();
+
+			if (status !== 'granted') {
+				Alert.alert('Location access required. Please enable in settings.');
+				return;
+			}
+
+			let location = await Location.getCurrentPositionAsync({});
+			api.get(`/offers?lat=${location.coords.latitude}&lng=${location.coords.longitude}`)
+				.then((resp) => {
+					setFoodData(resp.data);
+				})
+				.catch((err) => {
+					console.log(err);
+				});
+		} catch (error) {
+			console.error('Error requesting location permission:', error);
+		}
+	};
 
 	useEffect(() => {
-        getOffers()
+		getOffers();
 	}, []);
+
+	const formatPhoneNumber = (num: string) => {
+		const areaCode = num.slice(0, 3);
+		const firstPart = num.slice(3, 6);
+		const secondPart = num.slice(6);
+
+		return `(${areaCode}) ${firstPart}-${secondPart}`;
+	};
 
 	const rowRefs = useRef<Record<string, SwipeRow<FoodItem>>>(null);
 	const renderItem = ({ item }: { item: any }) => (
@@ -52,26 +62,44 @@ export default function ClaimScreen() {
 			<Text style={styles.icon}>{item.foodItem.image}</Text>
 			<View>
 				<Text style={styles.title}>{item.foodItem.name.charAt(0).toUpperCase() + item.foodItem.name.slice(1).toLowerCase()}</Text>
-				<Text style={styles.exp}>Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}</Text>
+				<Text style={styles.exp}>
+					Exp: {new Date(item.foodItem.expDate).toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' })}
+				</Text>
 			</View>
-			<Text style={styles.days}>{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left</Text>
+			<View style={{ marginLeft: 'auto' }}>
+				<Text style={styles.number}>{formatPhoneNumber(item.owner.phone)}</Text>
+				<Text style={styles.days}>
+					{Math.ceil(Math.abs(new Date(item.foodItem.expDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+				</Text>
+			</View>
 		</View>
 	);
+
+	const onRefresh = React.useCallback(() => {
+		setRefreshing(true);
+        getOffers();
+		setTimeout(() => {
+			setRefreshing(false);
+		}, 2000);
+	}, []);
 
 	return (
 		<SafeAreaView>
 			<TouchableOpacity
 				onPress={() => {
 					SecureStorage.deleteItemAsync('token');
+                    router.navigate('/LoginScreen')
 				}}
 			>
-				<Text>clear storage</Text>
+				<Text>LOG OUT</Text>
 			</TouchableOpacity>
 			<SwipeListView
 				data={foodData}
 				renderItem={renderItem}
 				disableRightSwipe={true}
-                disableLeftSwipe={true}
+				disableLeftSwipe={true}
+				refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                style={{height: '100%'}}
 			/>
 		</SafeAreaView>
 	);
@@ -116,12 +144,17 @@ const styles = StyleSheet.create({
 	exp: {
 		fontSize: 14,
 		fontFamily: 'JostRegular',
-        color: '#606C38'
+		color: '#606C38',
+	},
+	number: {
+		fontSize: 18,
+		fontFamily: 'JostRegular',
+		color: 'black',
 	},
 	days: {
-		fontSize: 17,
+		fontSize: 15,
 		fontFamily: 'JostRegular',
-        marginLeft: 'auto',
-        color: '#606C38'
+		color: '#606C38',
+		textAlign: 'right',
 	},
 });

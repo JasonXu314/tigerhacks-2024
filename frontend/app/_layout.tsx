@@ -27,6 +27,7 @@ export default function RootLayout() {
 		<FoodProvider>
 			<Stack initialRouteName="/" screenOptions={{ headerShown: false }}>
 				<Stack.Screen name="LandingPage" options={{ headerShown: false }} />
+				<Stack.Screen name="InstructionScreen" options={{ headerShown: false }} />
 				<Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
 				<Stack.Screen name="CorrectionScreen" options={{ headerShown: false }} />
 				<Stack.Screen name="ContactsScreen" options={{ headerShown: false }} />
