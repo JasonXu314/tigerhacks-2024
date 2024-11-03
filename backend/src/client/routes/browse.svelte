@@ -59,7 +59,8 @@
 		</div>
 	{/each}
 </main>
-<table>
+
+<!-- <table>
 	<thead>
 		<tr>
 			<th scope="col">Name</th>
@@ -86,7 +87,7 @@
 			</tr>
 		{/each}
 	</tbody>
-</table>
+</table> -->
 
 <style>
 	:root {
